@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PendingEmailStudentPortal extends Model
+class FeeStatus extends Model
 {
     use HasFactory;
 
@@ -16,8 +16,8 @@ class PendingEmailStudentPortal extends Model
         'updated_at',
     ];
 
-    public function student(): BelongsTo
+    public function studentRecords(): HasMany
     {
-        return $this->belongsTo(Student::class, 'student_id', 'id');
+        return $this->hasMany(StudentRecord::class);
     }
 }

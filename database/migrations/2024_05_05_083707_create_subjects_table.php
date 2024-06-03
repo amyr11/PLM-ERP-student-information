@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pending_email_p_l_m_emails', function (Blueprint $table) {
+        Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('subject_code');
+            $table->string('subject_name');
+            $table->integer('units');
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pending_email_p_l_m_emails');
+        Schema::dropIfExists('subjects');
     }
 };

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PendingEmailStudentPortal extends Model
+class StudentFamily extends Model
 {
     use HasFactory;
 
@@ -16,8 +16,8 @@ class PendingEmailStudentPortal extends Model
         'updated_at',
     ];
 
-    public function student(): BelongsTo
+    public function students(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'student_id', 'id');
+        return $this->belongsTo(Student::class);
     }
 }
