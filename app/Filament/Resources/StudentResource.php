@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -59,6 +60,23 @@ class StudentResource extends Resource
                             ->schema([
                                 DatePicker::make('birthdate')
                                     ->required(),
+                                // Select::make('biological_sex_id')
+                                //     ->relationship('biologicalSex', 'sex')
+                                //     ->required(),
+                                // Select::make('civil_status_id')
+                                //     ->relationship('civilStatus', 'civil_status')
+                                //     ->required(),
+                                // Select::make('citizenship_id')
+                                //     ->relationship('citizenship', 'citizenship')
+                                //     ->required(),
+                                // Select::make('city_id')
+                                //     ->relationship('city', 'city_name')
+                                //     ->required(),
+                                // Select::make('birthplace_city_id') // Parang walang birthplace_cities sa migrations folder?
+                                //     ->relationship('birthplaceCity', 'name')
+                                //     ->required(),
+                                TextInput::make('religion'),
+                                TextInput::make('pedigree'),
                                 TextInput::make('permanent_address')
                                     ->required(),
                                 TextInput::make('personal_email')
@@ -68,7 +86,42 @@ class StudentResource extends Resource
                                     ->required()
                                     ->length(11),
                                 TextInput::make('telephone_no'),
-                                TextInput::make('religion'),
+                            ]),
+                    ]),
+                Section::make('Academic information')
+                    ->schema([
+                        Grid::make([
+                            'sm' => 2,
+                            'lg' => 3,
+                        ])
+                            ->schema([
+                                TextInput::make('year_level')
+                                    ->required(),
+                                // Select::make('academic_year_id')
+                                //     ->relationship('academicYear', 'id')
+                                //     ->required(),
+                                DatePicker::make('entry_date')
+                                    ->required(),
+                                DatePicker::make('graduation_date'),
+                                // Select::make('registration_status_id')
+                                //     ->relationship('registrationStatus', 'registration_status')
+                                //     ->required(),
+                                // Select::make('degree_program_id')
+                                //     ->relationship('degreeProgram', 'degree_program')
+                                //     ->required(),
+                            ]),
+                    ]),
+                Section::make('Additional information')
+                    ->schema([
+                        Grid::make([
+                            'sm' => 2,
+                            'lg' => 3,
+                        ])
+                            ->schema([
+                                TextInput::make('paying')
+                                    ->required()
+                                    ->default('false'),
+                                TextInput::make('photo_link'),
                             ]),
                     ]),
             ]);
