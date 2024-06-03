@@ -23,7 +23,7 @@ class StudentRequest extends Model
 
     public function paymentMode(): BelongsTo
     {
-        return $this->belongsTo(PaymentMode::class);
+        return $this->belongsTo(StudentRequestMode::class);
     }
 
     public function studentRequestStatus(): BelongsTo

@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('student_requests', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('purpose');
+            $table->string('receipt_no');
+            $table->string('registrar_name')->nullable();
+            $table->float('total');
             $table->date('date_requested');
             $table->date('date_of_payment');
-            $table->float('amount_paid');
-            $table->string('receipt_no');
-            $table->string('purpose');
             $table->date('expected_release');
             $table->date('date_received')->nullable();
         });

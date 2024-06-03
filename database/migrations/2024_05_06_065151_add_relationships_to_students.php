@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::table('students', function (Blueprint $table) {
             $table->foreignId('biological_sex_id')->constrained();
-            $table->foreignId('degree_program_id')->constrained();
-            $table->foreignId('birthplace_city_id')->constrained('cities', 'id');
-            $table->foreignId('city_id')->constrained();
             $table->foreignId('civil_status_id')->constrained();
+            $table->foreignId('citizenship_id')->constrained();
+            $table->foreignId('city_id')->constrained();
             $table->foreignId('registration_status_id')->constrained();
+            $table->foreignId('degree_program_id')->constrained();
             $table->foreignId('academic_year_id')->constrained();
+            $table->foreignId('birthplace_city_id')->constrained('cities', 'id');
         });
     }
 
