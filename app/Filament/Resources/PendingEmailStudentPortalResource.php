@@ -59,8 +59,7 @@ class PendingEmailStudentPortalResource extends Resource
                 TextColumn::make('id')->sortable()->label('ID'),
                 TextColumn::make('student.student_no')->label('Student Number'),
                 TextColumn::make('temp_password')->label('Temporary Password'),
-                TextColumn::make('created_at')->label('Created At')->dateTime(),
-                TextColumn::make('updated_at')->label('Updated At')->dateTime(),
+                TextColumn::make('student.personal_email')->label('Personal Email'),
             ])
             ->filters([
                 //
