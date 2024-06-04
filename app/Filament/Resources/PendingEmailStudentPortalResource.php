@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PendingEmailStudentPortalResource\Pages;
 use App\Filament\Resources\PendingEmailStudentPortalResource\RelationManagers;
-use App\Mail\SendStudentCredentials;
+use App\Mail\SendStudentPortalCredentials;
 use App\Jobs\BulkSendEmail;
 use App\Models\PendingEmailStudentPortal;
 use Filament\Forms;
@@ -80,7 +80,7 @@ class PendingEmailStudentPortalResource extends Resource
                         // Send the email before deletion
                         if ($record && $record->student) {
                             try {
-                                Mail::to($record->student->personal_email)->send(new SendStudentCredentials($record));
+                                Mail::to($record->student->personal_email)->send(new SendStudentPortalCredentials($record));
                                 Log::info('Email sent to: ' . $record->student->personal_email);
                             } catch (\Exception $e) {
                                 Log::error('Failed to send email to: ' . $record->student->personal_email . '. Error: ' . $e->getMessage());
@@ -110,7 +110,7 @@ class PendingEmailStudentPortalResource extends Resource
                             if ($student && $student->student) {
                                 try {
                                     // Send email
-                                    Mail::to($student->student->personal_email)->send(new SendStudentCredentials($student));
+                                    Mail::to($student->student->personal_email)->send(new SendStudentPortalCredentials($student));
                                     Log::info('Email sent to: ' . $student->student->personal_email);
 
                                     // Delete the student from PendingEmailStudentPortal
@@ -128,12 +128,12 @@ class PendingEmailStudentPortalResource extends Resource
                     ->label('Edit Email Template')
                     ->action(function (array $data) {
                         DB::table('email_templates')->updateOrInsert(
-                            ['type' => 'student_credentials'],
+                            ['type' => 'student_portal_credentials'],
                             ['subject' => $data['subject'], 'body' => $data['body']]
                         );
                     })
                     ->mountUsing(function ($form) {
-                        $template = DB::table('email_templates')->where('type', 'student_credentials')->first();
+                        $template = DB::table('email_templates')->where('type', 'student_portal_credentials')->first();
                         $form->fill([
                             'subject' => $template->subject ?? 'Your Student Portal Credentials',
                             'body' => $template->body ?? 

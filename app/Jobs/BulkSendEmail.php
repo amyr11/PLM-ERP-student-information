@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use App\Models\PendingEmailStudentPortal;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\SendStudentCredentials;
+use App\Mail\SendStudentPortalCredentials;
 use Illuminate\Support\Facades\Log;
 
 class BulkSendEmail implements ShouldQueue
@@ -37,7 +37,7 @@ class BulkSendEmail implements ShouldQueue
         foreach ($this->students as $student) {
             $student = PendingEmailStudentPortal::find($student->id);
             if ($student && $student->student) {
-                Mail::to($student->student->personal_email)->send(new SendStudentCredentials($student));
+                Mail::to($student->student->personal_email)->send(new SendStudentPortalCredentials($student));
                 Log::info('Email sent to: ' . $student->student->personal_email);
             }
         }

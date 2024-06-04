@@ -8,7 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\PendingEmailStudentPortal;
 use Illuminate\Support\Facades\DB;
 
-class SendStudentCredentials extends Mailable
+class SendStudentPortalCredentials extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -24,7 +24,7 @@ class SendStudentCredentials extends Mailable
 
     public function build()
     {
-        $template = DB::table('email_templates')->where('type', 'student_credentials')->first();
+        $template = DB::table('email_templates')->where('type', 'student_portal_credentials')->first();
 
         // Define default values
         $defaultSubject = 'Your Student Portal Credentials';
@@ -38,7 +38,7 @@ class SendStudentCredentials extends Mailable
             <p>PLM Office of the University Registrar</p>
         ';
 
-        return $this->view('emails.student_credentials')
+        return $this->view('emails.student_portal_credentials')
             ->subject($template->subject ?? $defaultSubject)
             ->with([
                 'subject' => $template->subject ?? $defaultSubject,
