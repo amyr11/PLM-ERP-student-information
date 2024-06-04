@@ -11,13 +11,7 @@ class StudentRequestStatus extends Model
     use HasFactory;
 
     protected $guarded = [
-        'id',
         'created_at',
         'updated_at',
     ];
-
-    public function studentRequests(): HasMany
-    {
-        return $this->hasMany(StudentRequest::class);
-    }
 }
