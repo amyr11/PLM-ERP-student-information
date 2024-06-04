@@ -55,7 +55,7 @@ class StudentFactory extends Factory
             'city_id' => $city_id,
             'birthplace_city_id' => $cities->random()->id,
             'aysem_id' => $aysem->id,
-            'plm_email' => PLMEmail::generate($lastName, $firstName, $middleName, $aysem->academic_year),
+            'plm_email' => PLMEmail::generate($firstName, $middleName, $lastName, $aysem->academic_year),
         ];
     }
 }

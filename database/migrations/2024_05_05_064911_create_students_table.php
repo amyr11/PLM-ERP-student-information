@@ -20,6 +20,15 @@ return new class extends Migration
             $table->string('middle_name');
             $table->string('maiden_name')->nullable();
             $table->string('suffix')->nullable();
+            $table->string('full_name')->virtualAs('
+                CONCAT(
+                    first_name, " ",
+                    middle_name, " ",
+                    last_name,
+                    IF(suffix IS NOT NULL AND suffix != "", CONCAT(" ", suffix), "")
+                )
+            ');
+
             
             $table->date('birthdate');
             $table->string('permanent_address');
