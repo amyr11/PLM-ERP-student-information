@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             BiologicalSexSeeder::class,
             CivilStatusSeeder::class,
             CitizenshipSeeder::class,
-            AcademicYearSeeder::class,
+            AysemSeeder::class,
             StudentSeeder::class,
 
             RegistrationStatusSeeder::class,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\PLMEmail;
 use App\Services\StudentCredential;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,16 +27,16 @@ class Student extends Model
         'updated_at',
     ];
 
-    private function generatePLMEmail() {
-        $this->plm_email = PLMEmail::generate($this->first_name, $this->middle_name, $this->last_name, $this->entry_date);
-        $this->save();
-    }
+    protected $casts = [
+        'birthdate' => 'date',
+        'entry_date' => 'date',
+    ];
 
-    public static function generateStudentNumber($entry_date, $city_id, $aysem_id) {
-        $entryYear = $entry_date->format('Y');
-        
+    public static function generateStudentNumber($academic_year, $city_id) {
         // Series number which is the next number in the total number of students in a specific aysem
-        $series = Student::where('aysem_id', $aysem_id)->count() + 1;
+        $series = Student::whereHas('aysem', function($query) use ($academic_year) {
+            $query->where('academic_year', $academic_year);
+        })->count() + 1;
         
         // Check if the student's 'city_id' belongs to 'Manila'
         $city = City::find($city_id);
@@ -44,7 +45,7 @@ class Student extends Model
         // If the student lives in manila, create a variable with value 0, else 1
         $cityNumber = $cityIsManila ? 0 : 1;
 
-        $studentNo = $entryYear . $cityNumber . str_pad($series, 4, '0', STR_PAD_LEFT);
+        $studentNo = $academic_year . $cityNumber . str_pad($series, 4, '0', STR_PAD_LEFT);
         
         return $studentNo;
     }
@@ -61,15 +62,52 @@ class Student extends Model
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    | Below are the relationships of the Student model with other models
+    |
+    */
+
     public function terms(): HasMany
     {
         return $this->hasMany(StudentTerm::class);
     }
 
+    public function biologicalSex(): BelongsTo
+    {
+        return $this->belongsTo(BiologicalSex::class);
+    }
+
+    public function civilStatus(): BelongsTo
+    {
+        return $this->belongsTo(CivilStatus::class);
+    }
+
+    public function citizenship(): BelongsTo
+    {
+        return $this->belongsTo(Citizenship::class);
+    }
+
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function birthplaceCity(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function aysem(): BelongsTo
+    {
+        return $this->belongsTo(Aysem::class);
+    }
+
     protected static function booted()
     {
         static::created(function ($student) {
-            $student->generatePLMEmail();
             $randomPassword = Str::random(6);
             $student->storePassword($randomPassword);
             StudentCredential::addToPendingCredentials($student->student_no, $randomPassword);

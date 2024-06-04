@@ -5,11 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Imports\StudentImporter;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
+use App\Models\Aysem;
+use App\Models\Citizenship;
 use App\Models\Student;
+use App\Services\PLMEmail;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,6 +23,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
@@ -33,9 +38,7 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('student_no')
-                            ->required()
-                            ->length(9),
+                Hidden::make('student_no'),
                 Section::make('Personal information')
                     ->schema([
                         Grid::make([
@@ -45,12 +48,76 @@ class StudentResource extends Resource
                         ])
                             ->schema([
                                 TextInput::make('last_name')
-                                    ->required(),
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(
+                                        function (callable $set, callable $get) {
+                                            $aysem = Aysem::find($get('aysem_id'));
+                                            $lastName = $get('last_name');
+                                            $firstName = $get('first_name');
+                                            $middleName = $get('middle_name');
+
+                                            if ($aysem && $lastName && $firstName && $middleName) {
+                                                $set('plm_email', PLMEmail::generate( $firstName, $middleName, $lastName, $aysem->academic_year));
+                                            }
+                                            else {
+                                                $set('plm_email', '');
+                                            }
+                                        }
+                                    ),
                                 TextInput::make('first_name')
-                                    ->required(),
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(
+                                        function (callable $set, callable $get) {
+                                            $aysem = Aysem::find($get('aysem_id'));
+                                            $lastName = $get('last_name');
+                                            $firstName = $get('first_name');
+                                            $middleName = $get('middle_name');
+
+                                            if ($aysem && $lastName && $firstName && $middleName) {
+                                                $set('plm_email', PLMEmail::generate( $firstName, $middleName, $lastName, $aysem->academic_year));
+                                            }
+                                            else {
+                                                $set('plm_email', '');
+                                            }
+                                        }
+                                    ),
                                 TextInput::make('middle_name')
-                                    ->required(),
-                                TextInput::make('maiden_name'),
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(
+                                        function (callable $set, callable $get) {
+                                            $aysem = Aysem::find($get('aysem_id'));
+                                            $lastName = $get('last_name');
+                                            $firstName = $get('first_name');
+                                            $middleName = $get('middle_name');
+
+                                            if ($aysem && $lastName && $firstName && $middleName) {
+                                                $set('plm_email', PLMEmail::generate( $firstName, $middleName, $lastName, $aysem->academic_year));
+                                            }
+                                            else {
+                                                $set('plm_email', '');
+                                            }
+                                        }
+                                    ),
+                                TextInput::make('maiden_name')
+                                    ->reactive()
+                                    ->afterStateUpdated(
+                                        function (callable $set, callable $get) {
+                                            $aysem = Aysem::find($get('aysem_id'));
+                                            $lastName = $get('last_name');
+                                            $firstName = $get('first_name');
+                                            $middleName = $get('middle_name');
+
+                                            if ($aysem && $lastName && $firstName && $middleName) {
+                                                $set('plm_email', PLMEmail::generate( $firstName, $middleName, $lastName, $aysem->academic_year));
+                                            }
+                                            else {
+                                                $set('plm_email', '');
+                                            }
+                                        }
+                                    ),
                                 TextInput::make('suffix'),
                             ]),
                         Grid::make([
@@ -59,23 +126,47 @@ class StudentResource extends Resource
                         ])
                             ->schema([
                                 DatePicker::make('birthdate')
+                                    ->native(false)
                                     ->required(),
-                                // Select::make('biological_sex_id')
-                                //     ->relationship('biologicalSex', 'sex')
-                                //     ->required(),
-                                // Select::make('civil_status_id')
-                                //     ->relationship('civilStatus', 'civil_status')
-                                //     ->required(),
-                                // Select::make('citizenship_id')
-                                //     ->relationship('citizenship', 'citizenship')
-                                //     ->required(),
-                                // Select::make('city_id')
-                                //     ->relationship('city', 'city_name')
-                                //     ->required(),
-                                // Select::make('birthplace_city_id') // Parang walang birthplace_cities sa migrations folder?
-                                //     ->relationship('birthplaceCity', 'name')
-                                //     ->required(),
-                                TextInput::make('religion'),
+                                Select::make('biological_sex_id')
+                                    ->native(false)
+                                    ->relationship('biologicalSex', 'sex')
+                                    ->required(),
+                                Select::make('civil_status_id')
+                                    ->native(false)
+                                    ->relationship('civilStatus', 'civil_status')
+                                    ->required(),
+                                Select::make('citizenship_id')
+                                    ->native(false)
+                                    ->relationship('citizenship', 'citizenship')
+                                    ->default(function () {
+                                        return Citizenship::where('citizenship', 'Filipino')->first()->id;
+                                    })
+                                    ->required(),
+                                Select::make('city_id')
+                                    ->native(false)
+                                    ->relationship('city', 'city_name')
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(
+                                        function (callable $set, callable $get) {
+                                            $aysem = Aysem::find($get('aysem_id'));
+                                            $cityId = $get('city_id');
+
+                                            if ($aysem && $cityId) {
+                                                $set('student_no', Student::generateStudentNumber($aysem->academic_year, $cityId));
+                                            }
+                                            else {
+                                                $set('student_no', '');
+                                            }
+                                        }
+                                    ),
+                                Select::make('birthplace_city_id')
+                                    ->native(false)
+                                    ->relationship('birthplaceCity', 'city_name')
+                                    ->required(),
+                                TextInput::make('religion')
+                                    ->required(),
                                 TextInput::make('pedigree'),
                                 TextInput::make('permanent_address')
                                     ->required(),
@@ -95,33 +186,141 @@ class StudentResource extends Resource
                             'lg' => 3,
                         ])
                             ->schema([
-                                TextInput::make('year_level')
-                                    ->required(),
-                                // Select::make('academic_year_id')
-                                //     ->relationship('academicYear', 'id')
-                                //     ->required(),
                                 DatePicker::make('entry_date')
+                                    ->native(false)
+                                    ->required()
+                                    ->default(now()),
+                                Select::make('aysem_id')
+                                    ->native(false)
+                                    ->label('Academic year and semester')
+                                    ->relationship('aysem', 'academic_year_sem')
+                                    ->searchable()
+                                    ->required()
+                                    ->default(function () {
+                                        return Aysem::latest('date_start')->first()->id;
+                                    })
+                                    ->reactive()
+                                    ->afterStateUpdated(
+                                        function (callable $set, callable $get) {
+                                            $aysem = Aysem::find($get('aysem_id'));
+                                            $cityId = $get('city_id');
+
+                                            $lastName = $get('last_name');
+                                            $firstName = $get('first_name');
+                                            $middleName = $get('middle_name');
+
+                                            if ($aysem && $lastName && $firstName && $middleName) {
+                                                $set('plm_email', PLMEmail::generate( $firstName, $middleName, $lastName, $aysem->academic_year));
+                                            }
+                                            else {
+                                                $set('plm_email', '');
+                                            }
+
+                                            if ($aysem && $cityId) {
+                                                $set('student_no', Student::generateStudentNumber($aysem->academic_year, $cityId));
+                                            }
+                                            else {
+                                                $set('student_no', '');
+                                            }
+                                        }
+                                    ),
+                                TextInput::make('plm_email')
+                                    ->email()
                                     ->required(),
-                                DatePicker::make('graduation_date'),
-                                // Select::make('registration_status_id')
-                                //     ->relationship('registrationStatus', 'registration_status')
-                                //     ->required(),
-                                // Select::make('degree_program_id')
-                                //     ->relationship('degreeProgram', 'degree_program')
-                                //     ->required(),
+                                Select::make('paying')
+                                    ->native(false)
+                                    ->options([
+                                        0 => 'No',
+                                        1 => 'Yes',
+                                    ])
+                                    ->default(0)
+                                    ->required(),
                             ]),
                     ]),
-                Section::make('Additional information')
+                Section::make('Medical information')
                     ->schema([
                         Grid::make([
                             'sm' => 2,
                             'lg' => 3,
                         ])
                             ->schema([
-                                TextInput::make('paying')
-                                    ->required()
-                                    ->default('false'),
-                                TextInput::make('photo_link'),
+                                TextInput::make('height')
+                                    ->numeric(),
+                                TextInput::make('weight')
+                                    ->numeric(),
+                                TextInput::make('complexion'),
+                                TextInput::make('blood_type'),
+                                Select::make('dominant_hand')
+                                    ->native(false)
+                                    ->options([
+                                        'left' => 'Left',
+                                        'right' => 'Right',
+                                        'ambidextrous' => 'Ambidextrous',
+                                    ]),
+                                TextInput::make('medical_history'),
+                            ]),
+                    ]),
+                Section::make('Student education')
+                    ->schema([
+                        Grid::make([
+                            'sm' => 2,
+                            'lg' => 3,
+                        ])
+                            ->schema([
+                                TextInput::make('lrn')
+                                    ->label('Learner Reference Number (LRN)')
+                                    ->numeric(),
+                                TextInput::make('school_name'),
+                                TextInput::make('school_address'),
+                                TextInput::make('school_type'),
+                                TextInput::make('strand'),
+                                TextInput::make('year_entered')
+                                    ->numeric(),
+                                TextInput::make('year_graduated')
+                                    ->numeric(),
+                                TextInput::make('honors_awards'),
+                                TextInput::make('general_average')
+                                    ->numeric(),
+                                TextInput::make('remarks'),
+                                TextInput::make('org_name'),
+                                TextInput::make('org_position'),
+                                TextInput::make('previous_tertiary'),
+                                TextInput::make('previous_sem'),
+                            ]),
+                    ]),
+                Section::make('Student family')
+                    ->schema([
+                        Grid::make([
+                            'sm' => 2,
+                            'lg' => 3,
+                        ])
+                            ->schema([
+                                TextInput::make('father_last_name'),
+                                TextInput::make('father_first_name'),
+                                TextInput::make('father_middle_name'),
+                                TextInput::make('father_address'),
+                                TextInput::make('father_contact_no'),
+                                TextInput::make('father_office_employer'),
+                                TextInput::make('father_office_address'),
+                                TextInput::make('father_office_num'),
+                                TextInput::make('mother_lastname'),
+                                TextInput::make('mother_first_name'),
+                                TextInput::make('mother_middle_name'),
+                                TextInput::make('mother_address'),
+                                TextInput::make('mother_contact_no'),
+                                TextInput::make('mother_office_employer'),
+                                TextInput::make('mother_office_address'),
+                                TextInput::make('mother_office_num'),
+                                TextInput::make('guardian_lastname'),
+                                TextInput::make('guardian_first_name'),
+                                TextInput::make('guardian_middle_name'),
+                                TextInput::make('guardian_address'),
+                                TextInput::make('guardian_contact_no'),
+                                TextInput::make('guardian_office_employer'),
+                                TextInput::make('guardian_office_address'),
+                                TextInput::make('guardian_office_num'),
+                                TextInput::make('annual_family_income')
+                                    ->numeric(),
                             ]),
                     ]),
             ]);

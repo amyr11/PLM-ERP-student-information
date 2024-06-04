@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('middle_name');
             $table->string('maiden_name')->nullable();
             $table->string('suffix')->nullable();
+            
             $table->date('birthdate');
             $table->string('permanent_address');
             $table->string('pedigree')->nullable();
@@ -59,6 +60,7 @@ return new class extends Migration
             $table->string('org_position')->nullable();
             $table->string('previous_tertiary')->nullable();
             $table->string('previous_sem')->nullable();
+            
             // Student Family
             $table->string('father_last_name')->nullable();
             $table->string('father_first_name')->nullable();
