@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('citizenship_id')->constrained();
             $table->foreignId('city_id')->constrained();
             $table->foreignId('birthplace_city_id')->constrained('cities', 'id');
-            $table->foreignId('academic_year_id')->constrained();
+            $table->foreignId('aysem_id')->constrained();
         });
     }
 
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->dropForeign(['citizenship_id']);
             $table->dropForeign(['city_id']);
             $table->dropForeign(['birthplace_city_id']);
-            $table->dropForeign(['academic_year_id']);
+            $table->dropForeign(['aysem_id']);
         });
     }
 };

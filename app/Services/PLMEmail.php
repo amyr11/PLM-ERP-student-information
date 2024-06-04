@@ -61,7 +61,7 @@ class PLMEmail
 
         $counter = 1;
         $uniqueEmail = $plmEmail;
-        while (Student::where('plm_email', $uniqueEmail)->exists() || Professor::where('plm_email', $uniqueEmail)->exists()) {
+        while (Student::where('plm_email', $uniqueEmail)->exists()) {
             $uniqueEmail = $baseEmail . $counter . '@' . $domain;
             $counter++;
         }
