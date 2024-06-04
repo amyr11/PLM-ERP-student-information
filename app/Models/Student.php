@@ -61,6 +61,11 @@ class Student extends Model
         ]);
     }
 
+    public function pendingEmailStudentPortals(): HasMany
+    {
+        return $this->hasMany(PendingEmailStudentPortal::class);
+    }
+
     public function terms(): HasMany
     {
         return $this->hasMany(StudentTerm::class);
