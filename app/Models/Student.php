@@ -30,7 +30,9 @@ class Student extends Model
 
     private function generateStudentNumber() {
         $entryYear = $this->entry_date->format('Y');
-        $series = $this->id;
+        
+        // Series number which is the next number in the total number of students in a specific aysem
+        $series = Student::where('aysem_id', $this->aysem_id)->count();
         
         // Check if the student's 'city_id' belongs to 'Manila'
         $city = City::find($this->city_id);
@@ -47,6 +49,18 @@ class Student extends Model
     private function storePassword($password) {
         $this->password = Hash::make($password);
         $this->save();
+    }
+    
+    private function addTerm($aysemId) {
+        $this->terms()->create([
+            'aysem_id' => $aysemId,
+            'registration_status_id' => RegistrationStatus::where('status', 'Pending')->first()->id,
+        ]);
+    }
+
+    public function terms(): HasMany
+    {
+        return $this->hasMany(StudentTerm::class);
     }
 
     protected static function booted()
