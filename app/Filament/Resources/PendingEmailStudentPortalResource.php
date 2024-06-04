@@ -7,9 +7,12 @@ use App\Filament\Resources\PendingEmailStudentPortalResource\RelationManagers;
 use App\Models\PendingEmailStudentPortal;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -25,14 +28,27 @@ class PendingEmailStudentPortalResource extends Resource
 
     public static function canCreate(): bool
     {
-        return false;
+        return true;
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                TextInput::make('temp_password')
+                    ->label('Temporary Password')
+                    ->required()
+                    ->unique(),
+                Select::make('student_no')
+                    // Only show students who are not yet in the pending_email_student_portals table
+                    ->relationship('student', 'student_no', function ($query) {
+                        $query->whereNotIn('student_no', function ($query) {
+                            $query->select('student_no')
+                                  ->from('pending_email_student_portals');
+                        });
+                    })
+                    ->label('Student')
+                    ->required(),
             ]);
     }
 
@@ -40,7 +56,11 @@ class PendingEmailStudentPortalResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')->sortable()->label('ID'),
+                TextColumn::make('student.student_no')->label('Student Number'),
+                TextColumn::make('temp_password')->label('Temporary Password'),
+                TextColumn::make('created_at')->label('Created At')->dateTime(),
+                TextColumn::make('updated_at')->label('Updated At')->dateTime(),
             ])
             ->filters([
                 //
