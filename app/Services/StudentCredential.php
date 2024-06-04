@@ -20,6 +20,7 @@ class StudentCredential
             'student_id' => $studentId,
             'temp_password' => $tempPassword,
         ]);
+
         PendingEmailPLMEmail::create([
             'student_id' => $studentId,
             'temp_password' => $tempPassword,

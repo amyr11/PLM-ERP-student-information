@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\PLMEmail;
+use App\Services\StudentCredential;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Hash;
+use \Illuminate\Support\Str;
 
 class Student extends Model
 {
@@ -41,11 +44,19 @@ class Student extends Model
         $this->save();
     }
 
+    private function storePassword($password) {
+        $this->password = Hash::make($password);
+        $this->save();
+    }
+
     protected static function booted()
     {
         static::created(function ($student) {
             $student->generateStudentNumber();
             $student->generatePLMEmail();
+            $randomPassword = Str::random(6);
+            $student->storePassword($randomPassword);
+            StudentCredential::addToPendingCredentials($student->id, $randomPassword);
         });
     }
 }
