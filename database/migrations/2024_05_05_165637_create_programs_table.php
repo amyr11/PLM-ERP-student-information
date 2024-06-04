@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('academic_years', function (Blueprint $table) {
+        Schema::create('programs', function (Blueprint $table) {
             $table->id();
-            $table->string('academic_year_code');
-            $table->date('date_start');
-            $table->date('date_end');
+            $table->string('program_title');
+            $table->string('program_code');
+            $table->string('major');
+            $table->string('degree');
+            $table->string('degree_level');
+            $table->integer('num_credits');
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('academic_years');
+        Schema::dropIfExists('programs');
     }
 };

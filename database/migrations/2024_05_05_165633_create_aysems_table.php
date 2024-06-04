@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assigned_classes', function (Blueprint $table) {
+        Schema::create('aysems', function (Blueprint $table) {
             $table->id();
+            $table->integer('year');
+            $table->integer('semester_index');
+            $table->date('date_end');
+            $table->date('date_start');
             $table->timestamps();
-            $table->integer('semester');
-            $table->float('grade')->nullable();
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('assigned_classes');
+        Schema::dropIfExists('aysems');
     }
 };

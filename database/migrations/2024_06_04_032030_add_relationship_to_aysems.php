@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('academic_years', function (Blueprint $table) {
-            $table->id();
-            $table->string('academic_year_code');
-            $table->date('date_start');
-            $table->date('date_end');
-            $table->timestamps();
+        Schema::table('aysems', function (Blueprint $table) {
+            $table->foreignId('academic_year_id')
+                ->nullable()
+                ->constrained()
+                ->cascadeOnDelete();
         });
     }
 
@@ -25,6 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('academic_years');
+        Schema::table('aysems', function (Blueprint $table) {
+            $table->dropForeign(['academic_year_id']);
+        });
     }
 };
