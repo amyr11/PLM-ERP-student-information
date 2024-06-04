@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PendingEmailStudentPortalResource\Pages;
 use App\Filament\Resources\PendingEmailStudentPortalResource\RelationManagers;
+use App\Mail\SendStudentCredentials;
+use App\Jobs\BulkSendEmail;
 use App\Models\PendingEmailStudentPortal;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,10 +13,16 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PendingEmailStudentPortalResource extends Resource
 {
@@ -67,11 +75,68 @@ class PendingEmailStudentPortalResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function (Tables\Actions\DeleteAction $action, $record) {
+                        // Send the email before deletion
+                        if ($record && $record->student) {
+                            try {
+                                Mail::to($record->student->personal_email)->send(new SendStudentCredentials($record));
+                                Log::info('Email sent to: ' . $record->student->personal_email);
+                            } catch (\Exception $e) {
+                                Log::error('Failed to send email to: ' . $record->student->personal_email . '. Error: ' . $e->getMessage());
+                                $action->halt(); // Halt the deletion if email sending fails
+                            }
+                        }
+                    })
+                    ->after(function () {
+                        Log::info('Student record deleted after email was sent.');
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                Action::make('send_emails')
+                    ->label('Email All')
+                    ->action(function () {
+                        // Set max execution time to 300 seconds
+                        ini_set('max_execution_time', 300);
+
+                        $students = PendingEmailStudentPortal::all();
+
+                        foreach ($students as $student) {
+                            if ($student && $student->student) {
+                                try {
+                                    // Send email
+                                    Mail::to($student->student->personal_email)->send(new SendStudentCredentials($student));
+                                    Log::info('Email sent to: ' . $student->student->personal_email);
+
+                                    // Delete the student from PendingEmailStudentPortal
+                                    $student->delete();
+                                    Log::info('Deleted student: ' . $student->student->student_no . ' from PendingEmailStudentPortal');
+                                } catch (\Exception $e) {
+                                    Log::error('Failed to send email to: ' . $student->student->personal_email . '. Error: ' . $e->getMessage());
+                                }
+                            }
+                        }
+
+                        return 'Emails are being sent!';
+                    }),
+                Action::make('edit_email_template')
+                    ->label('Edit Email Template')
+                    ->action(function (array $data) {
+                        // Save the template to the database
+                        DB::table('email_templates')->updateOrInsert(
+                            ['type' => 'student_credentials'],
+                            ['subject' => $data['subject'], 'body' => $data['body']]
+                        );
+                    })
+                    ->form([
+                        TextInput::make('subject')->label('Email Subject')->required(),
+                        TextInput::make('body')->label('Email Body')->required(),
+                    ]),
             ]);
     }
 
