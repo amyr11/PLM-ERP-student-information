@@ -16,10 +16,8 @@ return new class extends Migration
             $table->foreignId('civil_status_id')->constrained();
             $table->foreignId('citizenship_id')->constrained();
             $table->foreignId('city_id')->constrained();
-            $table->foreignId('registration_status_id')->constrained();
-            $table->foreignId('degree_program_id')->constrained();
-            $table->foreignId('academic_year_id')->constrained();
             $table->foreignId('birthplace_city_id')->constrained('cities', 'id');
+            $table->foreignId('academic_year_id')->constrained();
         });
     }
 
@@ -29,12 +27,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->dropForeign(['degree_program_id']);
-            $table->dropForeign(['birthplace_city_id']);
-            $table->dropForeign(['city_id']);
             $table->dropForeign(['biological_sex_id']);
             $table->dropForeign(['civil_status_id']);
-            $table->dropForeign(['registration_status_id']);
+            $table->dropForeign(['citizenship_id']);
+            $table->dropForeign(['city_id']);
+            $table->dropForeign(['birthplace_city_id']);
             $table->dropForeign(['academic_year_id']);
         });
     }
