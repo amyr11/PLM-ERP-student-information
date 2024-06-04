@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('aysems', function (Blueprint $table) {
             $table->id();
-            $table->integer('year');
             $table->integer('semester_index');
             $table->date('date_end');
             $table->date('date_start');

@@ -16,16 +16,17 @@ class StudentSeeder extends Seeder
      */
     public function run(): void
     {
-        $count = 50;
-        for ($i = 0; $i < $count; $i++) {
-            $randomPassword = Str::random(6);
-            $student = Student::factory()->createOne([
-                'password' => Hash::make($randomPassword),
-            ]);
+        // $count = 50;
+        // for ($i = 0; $i < $count; $i++) {
+        //     $randomPassword = Str::random(6);
+        //     $student = Student::factory()->createOne([
+        //         'password' => Hash::make($randomPassword),
+        //     ]);
 
-            $studentId = $student->id;
+        //     $studentId = $student->id;
 
-            StudentCredential::addToPendingCredentials($studentId, $randomPassword);
-        }
+        //     StudentCredential::addToPendingCredentials($studentId, $randomPassword);
+        // }
+        Student::factory()->count(50)->create();
     }
 }
