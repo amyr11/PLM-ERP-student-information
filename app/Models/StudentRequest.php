@@ -14,4 +14,19 @@ class StudentRequest extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function studentRequestMode(): BelongsTo
+    {
+        return $this->belongsTo(StudentRequestMode::class);
+    }
+
+    public function studentRequestStatus(): BelongsTo
+    {
+        return $this->belongsTo(StudentRequestStatus::class);
+    }
 }
