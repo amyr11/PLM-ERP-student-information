@@ -11,18 +11,7 @@ class StudentViolation extends Model
     use HasFactory;
 
     protected $guarded = [
-        'id',
         'created_at',
         'updated_at',
     ];
-
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(Student::class);
-    }
-
-    public function offenseType(): BelongsTo
-    {
-        return $this->belongsTo(OffenseType::class);
-    }
 }

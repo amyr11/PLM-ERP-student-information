@@ -11,13 +11,7 @@ class City extends Model
     use HasFactory;
 
     protected $guarded = [
-        'id',
         'created_at',
         'updated_at',
     ];
-
-    public function students(): HasMany
-    {
-        return $this->hasMany(Student::class);
-    }
 }
