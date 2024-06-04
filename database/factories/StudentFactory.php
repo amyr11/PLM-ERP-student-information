@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\CivilStatus;
 use App\Models\DegreeProgram;
 use App\Models\RegistrationStatus;
+use App\Models\Student;
 use App\Services\PLMEmail;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -26,6 +27,7 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         $cities = City::all();
+        $city_id = $cities->random()->id;
         $biologicalSex = BiologicalSex::all();
         $civilStatus = CivilStatus::first();
         $citizenship = Citizenship::first();
@@ -37,6 +39,7 @@ class StudentFactory extends Factory
         $mobileNo = '09' . $this->faker->unique()->numberBetween(100000000, 999999999);
 
         return [
+            'student_no' => Student::generateStudentNumber($entryDate, $city_id, $aysem->id),
             'last_name' => $lastName,
             'first_name' => $firstName,
             'middle_name' => $middleName,
@@ -49,7 +52,7 @@ class StudentFactory extends Factory
             'biological_sex_id' => $biologicalSex->random()->id,
             'civil_status_id' => $civilStatus->id,
             'citizenship_id' => $citizenship->id,
-            'city_id' => $cities->random()->id,
+            'city_id' => $city_id,
             'birthplace_city_id' => $cities->random()->id,
             'aysem_id' => $aysem->id,
         ];

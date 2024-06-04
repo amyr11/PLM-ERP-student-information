@@ -17,12 +17,12 @@ class StudentCredential
     public static function addToPendingCredentials($studentId, $tempPassword)
     {
         PendingEmailStudentPortal::create([
-            'student_id' => $studentId,
+            'student_no' => $studentId,
             'temp_password' => $tempPassword,
         ]);
 
         PendingEmailPLMEmail::create([
-            'student_id' => $studentId,
+            'student_no' => $studentId,
             'temp_password' => $tempPassword,
         ]);
     }
@@ -35,7 +35,7 @@ class StudentCredential
      */
     public static function removePendingStudPortal($studentId)
     {
-        PendingEmailStudentPortal::where('student_id', $studentId)->delete();
+        PendingEmailStudentPortal::where('student_no', $studentId)->delete();
     }
 
     /**
@@ -46,6 +46,6 @@ class StudentCredential
      */
     public static function removePendingPLMEmail($studentId)
     {
-        PendingEmailPLMEmail::where('student_id', $studentId)->delete();
+        PendingEmailPLMEmail::where('student_no', $studentId)->delete();
     }
 }

@@ -18,6 +18,9 @@ class Student extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'student_no';
+    public $incrementing = false;
+
     protected $guarded = [
         'created_at',
         'updated_at',
@@ -28,22 +31,22 @@ class Student extends Model
         $this->save();
     }
 
-    private function generateStudentNumber() {
-        $entryYear = $this->entry_date->format('Y');
+    public static function generateStudentNumber($entry_date, $city_id, $aysem_id) {
+        $entryYear = $entry_date->format('Y');
         
         // Series number which is the next number in the total number of students in a specific aysem
-        $series = Student::where('aysem_id', $this->aysem_id)->count();
+        $series = Student::where('aysem_id', $aysem_id)->count() + 1;
         
         // Check if the student's 'city_id' belongs to 'Manila'
-        $city = City::find($this->city_id);
+        $city = City::find($city_id);
         $cityName = $city->city_name;
         $cityIsManila = $cityName === 'Manila';
         // If the student lives in manila, create a variable with value 0, else 1
         $cityNumber = $cityIsManila ? 0 : 1;
 
         $studentNo = $entryYear . $cityNumber . str_pad($series, 4, '0', STR_PAD_LEFT);
-        $this->student_no = $studentNo;
-        $this->save();
+        
+        return $studentNo;
     }
 
     private function storePassword($password) {
@@ -66,11 +69,10 @@ class Student extends Model
     protected static function booted()
     {
         static::created(function ($student) {
-            $student->generateStudentNumber();
             $student->generatePLMEmail();
             $randomPassword = Str::random(6);
             $student->storePassword($randomPassword);
-            StudentCredential::addToPendingCredentials($student->id, $randomPassword);
+            StudentCredential::addToPendingCredentials($student->student_no, $randomPassword);
         });
     }
 }
