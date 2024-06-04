@@ -16,14 +16,4 @@ class AcademicYear extends Model
         'created_at',
         'updated_at',
     ];
-
-    public function students(): HasMany
-    {
-        return $this->hasMany(Student::class);
-    }
-
-    public function studentRecords(): HasMany
-    {
-        return $this->hasMany(StudentRecord::class);
-    }
 }

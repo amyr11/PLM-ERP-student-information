@@ -11,13 +11,7 @@ class RequestedDocumentStatus extends Model
     use HasFactory;
 
     protected $guarded = [
-        'id',
         'created_at',
         'updated_at',
     ];
-
-    public function requestedDocuments(): HasMany
-    {
-        return $this->hasMany(RequestedDocument::class);
-    }
 }
