@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\RequestedDocument;
+use App\Models\StudentRequestMode;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,25 +23,21 @@ class DatabaseSeeder extends Seeder
             AcademicYearSeeder::class,
             StudentSeeder::class,
 
-            // AcademicYearSeeder::class,
-            // RegistrationStatusSeeder::class,
-            // DaySeeder::class,
-            // ClassModeSeeder::class,
+            RegistrationStatusSeeder::class,
+            DaySeeder::class,
+            ClassModeSeeder::class,
+            
+            StudentRequestStatusSeeder::class,
+            RequestedDocumentStatusSeeder::class,
+            DocumentTypeSeeder::class,
+            StudentRequestModeSeeder::class,
+            StudentRequestSeeder::class,
+            RequestedDocumentSeeder::class,
+
+            // CollegeSeeder::class,
             // FeeStatusSeeder::class,
             // OffenseTypeSeeder::class,
-            // PaymentModeSeeder::class,
-            // StudentRequestStatusSeeder::class,
-            // RequestedDocumentStatusSeeder::class,
-            // CollegeSeeder::class,
-            // DegreeProgramSeeder::class,
-            // DocumentTypeSeeder::class,
-            // SubjectSeeder::class,
-            // ProfessorSeeder::class,
             // BuildingSeeder::class,
-            // StudentClassSeeder::class,
-            // AssignedClassSeeder::class,
-            // StudentRequestSeeder::class,
-            // RequestedDocumentSeeder::class,
         ]);
     }
 }
