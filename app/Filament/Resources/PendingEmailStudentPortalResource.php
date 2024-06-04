@@ -127,15 +127,32 @@ class PendingEmailStudentPortalResource extends Resource
                 Action::make('edit_email_template')
                     ->label('Edit Email Template')
                     ->action(function (array $data) {
-                        // Save the template to the database
                         DB::table('email_templates')->updateOrInsert(
                             ['type' => 'student_credentials'],
                             ['subject' => $data['subject'], 'body' => $data['body']]
                         );
                     })
+                    ->mountUsing(function ($form) {
+                        $template = DB::table('email_templates')->where('type', 'student_credentials')->first();
+                        $form->fill([
+                            'subject' => $template->subject ?? 'Your Student Portal Credentials',
+                            'body' => $template->body ?? 
+'<p>Dear Student,</p>
+<p>Your student portal credentials are as follows:</p>
+<p>Username: {{ $student_no }}</p>
+<p>Password: {{ $temp_password }}</p>
+<p>Please log in and change your password immediately.</p>
+<p>Best regards,</p>
+<p>PLM Office of the University Registrar</p>',
+                        ]);
+                    })
                     ->form([
                         TextInput::make('subject')->label('Email Subject')->required(),
-                        TextInput::make('body')->label('Email Body')->required(),
+                        Forms\Components\Textarea::make('body')
+                            ->label('Email Body')
+                            ->required()
+                            ->rows(7)
+                            ->extraAttributes(['style' => 'height:auto; resize:both;']),
                     ]),
             ]);
     }
