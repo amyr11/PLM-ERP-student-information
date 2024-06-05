@@ -69,8 +69,14 @@ class PendingEmailStudentPortalResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('Student No.'),
-                TextColumn::make('temp_password')->label('Temporary Password'),
-                TextColumn::make('student.personal_email')->label('Personal Email'),
+                TextColumn::make('temp_password')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Temporary Password'),
+                TextColumn::make('student.personal_email')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Personal Email'),
             ])
             ->filters([
                 //

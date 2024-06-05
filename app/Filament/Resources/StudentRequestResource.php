@@ -134,31 +134,42 @@ class StudentRequestResource extends Resource
                     ->searchable()
                     ->label('Student No.'),
                 TextColumn::make('purpose')
+                    ->sortable()
+                    ->searchable()
                     ->label('Purpose'),
                 TextColumn::make('studentRequestMode.mode')
                     ->sortable()
+                    ->searchable()
                     ->label('Mode of Payment'),
                 TextColumn::make('receipt_no')
                     ->sortable()
+                    ->searchable()
                     ->label('Receipt No.'),
                 TextColumn::make('total')
+                    ->sortable()
+                    ->searchable()
                     ->label('Price Total (₱)'),
                 TextColumn::make('registrar_name')
                     ->sortable()
+                    ->searchable()
                     ->label('Registrar Name')
                     ->default('N/A'),
                 TextColumn::make('date_requested')
                     ->sortable()
+                    ->searchable()
                     ->label('Date Requested'),
                 TextColumn::make('expected_release')
                     ->sortable()
+                    ->searchable()
                     ->label('Expected Release'),
                 TextColumn::make('date_received')
                     ->sortable()
+                    ->searchable()
                     ->label('Date Received')
                     ->default('N/A'),
                 TextColumn::make('studentRequestStatus.status')
                     ->sortable()
+                    ->searchable()
                     ->label('Status'),
             ])
             ->filters([
