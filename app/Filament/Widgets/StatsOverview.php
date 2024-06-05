@@ -17,8 +17,7 @@ class StatsOverview extends BaseWidget
         return [
             Stat::make('Total students', Student::count())
                 ->icon('heroicon-o-chart-bar')
-                ->description('Total number of students in the system')
-                ->color('info'),
+                ->description('Total number of students in the system'),
             Stat::make('Enrolled students', StudentTerm::getEnrolledStudentCount($currentAysem))
                 ->icon('heroicon-o-user-group')
                 ->description('Number of students currently enrolled in the current academic year and semester ' . $currentAysem->academic_year_sem)
