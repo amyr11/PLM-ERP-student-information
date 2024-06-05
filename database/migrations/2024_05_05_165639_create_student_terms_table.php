@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('student_type');
             $table->boolean('graduating');
+            $table->boolean('graduated');
             $table->boolean('enrolled');
             $table->unsignedInteger('year_level');
             $table->timestamps();

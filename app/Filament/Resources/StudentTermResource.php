@@ -8,6 +8,7 @@ use App\Models\Aysem;
 use App\Models\RegistrationStatus;
 use App\Models\StudentTerm;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -85,10 +86,12 @@ class StudentTermResource extends Resource
                 Grid::make([
                     'default' => 1,
                 ])->schema([
-                    Toggle::make('graduating')->label('Graduating')
-                        ->default(false),
                     Toggle::make('enrolled')->label('Enrolled')
                         ->default(false),
+                    Toggle::make('graduating')->label('Graduating')
+                        ->default(false),
+                    Toggle::make('graduated')->label('Graduated')
+                        ->default(false)
                 ]),
             ]);
     }
@@ -116,10 +119,13 @@ class StudentTermResource extends Resource
                 TextColumn::make('registrationStatus.registration_status')
                     ->searchable()
                     ->sortable(),
+                IconColumn::make('enrolled')
+                    ->boolean()
+                    ->sortable(),
                 IconColumn::make('graduating')
                     ->boolean()
                     ->sortable(),
-                IconColumn::make('enrolled')
+                IconColumn::make('graduated')
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -141,18 +147,12 @@ class StudentTermResource extends Resource
                                 ->fromSub($subQuery, 'sub');
                         });
                     }),
-                Filter::make('graduating')
-                    ->label('Graduating')
-                    ->query(fn (Builder $query): Builder => $query->where('graduating', true)),
-                Filter::make('enrolled')
-                    ->label('Enrolled')
-                    ->query(fn (Builder $query): Builder => $query->where('enrolled', true)),
                 SelectFilter::make('aysem_id')
                     ->label('AYSEM')
                     ->searchable()
                     ->relationship('aysem', 'academic_year_sem')
                     ->default(function () {
-                        return Aysem::latest('date_start')->first()->id;
+                        return Aysem::current()->id;
                     }),
                 SelectFilter::make('program_id')
                     ->label('Program')
@@ -165,6 +165,22 @@ class StudentTermResource extends Resource
                     ->label('Block')
                     ->searchable()
                     ->relationship('block', 'block_id'),
+                SelectFilter::make('enrolled')
+                    ->options([
+                        true => 'Yes',
+                        false => 'No',
+                    ]),
+                SelectFilter::make('graduating')
+                    ->options([
+                        true => 'Yes',
+                        false => 'No',
+                    ]),
+                SelectFilter::make('graduated')
+                    ->options([
+                        true => 'Yes',
+                        false => 'No',
+                    ])
+                    ->default(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -175,26 +191,60 @@ class StudentTermResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 Tables\Actions\BulkAction::make('set_enrolled')
-                ->label('Edit')
-                ->icon('heroicon-o-pencil')
-                ->action(function ($records, array $data): void {
-                    foreach ($records as $record) {
-                        $record->enrolled = $data['enrolled'];
-                        $record->graduating = $data['graduating'];
-                        $record->save();
-                    }
-                })
-                ->form(function ($records) {
-                    $firstRecord = $records->first();
-                    return [
-                        Toggle::make('enrolled')
-                            ->label('Enrolled')
-                            ->default($firstRecord ? $firstRecord->enrolled : false),
-                        Toggle::make('graduating')
-                            ->label('Graduating')
-                            ->default($firstRecord ? $firstRecord->graduating : false),
-                    ];
-                }),
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->action(function ($records, array $data): void {
+                        foreach ($records as $record) {
+                            $record->enrolled = $data['enrolled'];
+                            $record->graduating = $data['graduating'];
+                            $record->save();
+                        }
+                    })
+                    ->form(function ($records) {
+                        $firstRecord = $records->first();
+                        return [
+                            Toggle::make('enrolled')
+                                ->label('Enrolled')
+                                ->default($firstRecord ? $firstRecord->enrolled : false),
+                            Toggle::make('graduating')
+                                ->label('Graduating')
+                                ->default($firstRecord ? $firstRecord->graduating : false),
+                        ];
+                    }),
+                    Tables\Actions\BulkAction::make('set_graduated')
+                    ->label('Set Graduated')
+                    ->icon('heroicon-o-academic-cap')
+                    ->action(function ($records, array $data): void {
+                        foreach ($records as $record) {
+                            $student = $record->student;
+                            if ($record->graduating) {
+                                $student->graduation_date = $data['graduation_date'];
+                                $student->save();
+                                $record->graduated = true;
+                                $record->save();
+                            } else {
+                                // Display error popup
+                                \Illuminate\Support\Facades\Session::flash('error', 'Cannot edit graduation date for non-graduating student.');
+                            }
+                        }
+                    })
+                    ->form(function ($records) {
+                        $firstRecord = $records->first();
+
+                        // Check if all selected records are graduating
+                        $graduating = $records->every(function ($record) {
+                            return $record->graduating;
+                        });
+
+                        return [
+                            DatePicker::make('graduation_date')
+                                ->native(false)
+                                ->label('Graduation Date')
+                                ->default($firstRecord ? $firstRecord->graduation_date : null)
+                                ->disabled(!$graduating), // Disable editing if not graduating
+                        ];
+                    }),
+                
             ]);
     }
 

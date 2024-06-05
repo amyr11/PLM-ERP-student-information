@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Observers\StudentTermObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
+#[ObservedBy([StudentTermObserver::class])]
 class StudentTerm extends Model
 {
     use HasFactory;
@@ -51,6 +54,7 @@ class StudentTerm extends Model
             ->where('year_level', $yearLevel)
             ->where('aysem_id', $aysem->id)
             ->where('enrolled', true)
+            ->where('graduated', false)
             ->count();
     }
 
@@ -62,7 +66,7 @@ class StudentTerm extends Model
     
         return static::whereIn('id', $latestStudents->pluck('latest_id'))
             ->where('enrolled', true)
+            ->where('graduated', false)
             ->count();
     }
-    
 }

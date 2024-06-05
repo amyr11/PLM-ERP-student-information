@@ -272,6 +272,9 @@ class StudentResource extends Resource
                                     ->default(1)
                                     ->hiddenOn(['edit', 'view'])
                                     ->required(),
+                                DatePicker::make('graduation_date')
+                                    ->native(false)
+                                    ->disabled(),
                             ]),
                     ]),
                 Section::make('Medical information')

@@ -64,9 +64,16 @@ class Student extends Model
             'registration_status_id' => $registrationStatusId,
             'student_type' => $studentType,
             'graduating' => $graduating,
+            'graduated' => false,
             'enrolled' => $enrolled,
             'year_level' => $yearLevel,
         ]);
+    }
+
+    public static function getNotGraduatedStudentsCount(): int
+    {
+        return Student::where('graduation_date', null)
+            ->count();
     }
 
     public static function getManilanStudentsCount(): int

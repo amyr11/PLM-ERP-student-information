@@ -25,6 +25,7 @@ class Program extends Model
         return $this->studentTerm()
             ->where('aysem_id', Aysem::current()->id)
             ->where('enrolled', true)
+            ->where('graduated', false)
             ->count();
     }
 }
