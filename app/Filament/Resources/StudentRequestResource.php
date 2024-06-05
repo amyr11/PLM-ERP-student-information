@@ -98,10 +98,7 @@ class StudentRequestResource extends Resource
                                 ->label('Date Received'),
                         ]),
                 ]),
-        ];
-
-        if (str_ends_with(request()->route()->getName(), '.create')) {
-            $schema[] = Section::make('Requested Documents')
+            Section::make('Requested Documents')
                 ->schema([
                     Forms\Components\Repeater::make('requested_documents')
                         ->relationship('requestedDocuments')
@@ -120,9 +117,10 @@ class StudentRequestResource extends Resource
                                 ->label('Status'),
                         ])
                         ->minItems(1)
+                        ->label('Requested Documents')
                         ->required(),
-                ]);
-        }
+                ]),
+        ];
 
         return $form->schema($schema);
     }
@@ -144,7 +142,7 @@ class StudentRequestResource extends Resource
                     ->sortable()
                     ->label('Receipt No.'),
                 TextColumn::make('total')
-                    ->label('Total'),
+                    ->label('Price Total (₱)'),
                 TextColumn::make('registrar_name')
                     ->sortable()
                     ->label('Registrar Name')

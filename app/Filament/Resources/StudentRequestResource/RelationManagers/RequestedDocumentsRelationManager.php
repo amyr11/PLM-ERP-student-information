@@ -32,13 +32,11 @@ class RequestedDocumentsRelationManager extends RelationManager
                 Select::make('document_type_id')
                     ->relationship('documentType', 'document_name')
                     ->required()
-                    ->label('Document Type')
-                    ->disabled(fn ($record) => $record !== null),
+                    ->label('Document Type'),
                 TextInput::make('no_of_copies')
                     ->required()
                     ->numeric()
-                    ->label('Number of Copies')
-                    ->disabled(fn ($record) => $record !== null),
+                    ->label('Number of Copies'),
                 Select::make('requested_document_status_id')
                     ->relationship('requestedDocumentStatus', 'status')
                     ->required()
@@ -59,11 +57,10 @@ class RequestedDocumentsRelationManager extends RelationManager
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                //
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                //
             ]);
     }
 }
