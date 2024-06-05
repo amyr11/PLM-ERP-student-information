@@ -262,10 +262,9 @@ class StudentResource extends Resource
                                     ->required(),
                                 Select::make('student_term.program_id')
                                     ->native(false)
-                                    ->label('Program Title')
+                                    ->label('Program')
                                     ->options(Program::pluck('program_title', 'id'))
                                     ->searchable()
-                                    ->preload()
                                     ->hiddenOn(['edit', 'view'])
                                     ->required(),
                                 TextInput::make('student_term.year_level')
@@ -377,6 +376,7 @@ class StudentResource extends Resource
                 TextColumn::make('personal_email')
                     ->searchable(),
                 TextColumn::make('plm_email')
+                    ->label('PLM email')
                     ->searchable(),
                 TextColumn::make('mobile_no')
                     ->searchable(),
