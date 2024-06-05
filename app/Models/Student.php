@@ -69,6 +69,14 @@ class Student extends Model
         ]);
     }
 
+    public static function getManilanStudentsCount(): int
+    {
+        $city = City::where('city_name', 'Manila')->firstOrFail();
+        return Student::where('city_id', $city->id)
+            ->where('graduation_date', null)
+            ->count();
+    }
+
     public function pendingEmailPLMEmails(): HasMany
     {
         return $this->hasMany(PendingEmailStudentPortal::class);

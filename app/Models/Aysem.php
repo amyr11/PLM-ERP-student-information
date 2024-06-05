@@ -16,4 +16,12 @@ class Aysem extends Model
         'created_at',
         'updated_at',
     ];
+
+    public static function current(): Aysem
+    {
+        // Return the latest academic year and semester
+        return static::orderBy('academic_year', 'desc')
+            ->orderBy('semester', 'desc')
+            ->first();
+    }
 }

@@ -21,6 +21,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 
@@ -173,6 +174,27 @@ class StudentTermResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                Tables\Actions\BulkAction::make('set_enrolled')
+                ->label('Edit')
+                ->icon('heroicon-o-pencil')
+                ->action(function ($records, array $data): void {
+                    foreach ($records as $record) {
+                        $record->enrolled = $data['enrolled'];
+                        $record->graduating = $data['graduating'];
+                        $record->save();
+                    }
+                })
+                ->form(function ($records) {
+                    $firstRecord = $records->first();
+                    return [
+                        Toggle::make('enrolled')
+                            ->label('Enrolled')
+                            ->default($firstRecord ? $firstRecord->enrolled : false),
+                        Toggle::make('graduating')
+                            ->label('Graduating')
+                            ->default($firstRecord ? $firstRecord->graduating : false),
+                    ];
+                }),
             ]);
     }
 
