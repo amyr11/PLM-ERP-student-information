@@ -85,7 +85,8 @@ class StudentRequestResource extends Resource
                                     $set('expected_release', $state);
                                     $set('date_received', $state);
                                 })
-                                ->label('Date Requested'),
+                                ->label('Date Requested')
+                                ->default(now()),
                             DatePicker::make('date_of_payment')
                                 ->minDate(fn (callable $get) => $get('date_requested'))
                                 ->required()
