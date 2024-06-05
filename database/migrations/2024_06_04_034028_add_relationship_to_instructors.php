@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('biological_sex_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('civil_status_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('college_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('citizenship_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->dropForeign(['biological_sex_id']);
             $table->dropForeign(['civil_status_id']);
             $table->dropForeign(['college_id']);
+            $table->dropForeign(['citizenship_id']);
         });
     }
 };

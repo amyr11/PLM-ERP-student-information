@@ -34,4 +34,9 @@ class StudentTerm extends Model
     {
         return $this->belongsTo(RegistrationStatus::class);
     }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class, 'student_no', 'student_no');
+    }
 }

@@ -241,8 +241,8 @@ class StudentResource extends Resource
                                     ])
                                     ->default(0)
                                     ->required(),
-                                Select::make('registration_status_id')
-                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
+                                Select::make('student_term.registration_status_id')
+                                    ->native(false)
                                     ->label('Registration Status')
                                     ->options(RegistrationStatus::pluck('registration_status', 'id'))
                                     ->default(function () {
@@ -250,8 +250,8 @@ class StudentResource extends Resource
                                     })
                                     ->hiddenOn(['edit', 'view'])
                                     ->required(),
-                                Select::make('student_type')
-                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
+                                Select::make('student_term.student_type')
+                                    ->native(false)
                                     ->label('Student type')
                                     ->options([
                                         'old' => 'Old',
@@ -260,20 +260,18 @@ class StudentResource extends Resource
                                     ->default('new')
                                     ->hiddenOn(['edit', 'view'])
                                     ->required(),
-                                Select::make('program_id')
+                                Select::make('student_term.program_id')
+                                    ->native(false)
                                     ->label('Program Title')
-                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
                                     ->options(Program::pluck('program_title', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->hiddenOn(['edit', 'view'])
-                                    ->hiddenOn(['edit', 'view'])
                                     ->required(),
-                                TextInput::make('year_level')
+                                TextInput::make('student_term.year_level')
                                     ->numeric()
                                     ->default(1)
                                     ->hiddenOn(['edit', 'view'])
-                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
                                     ->required(),
                             ]),
                     ]),

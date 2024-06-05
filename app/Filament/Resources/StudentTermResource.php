@@ -4,9 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentTermResource\Pages;
 use App\Filament\Resources\StudentTermResource\RelationManagers;
+use App\Models\Aysem;
+use App\Models\RegistrationStatus;
 use App\Models\StudentTerm;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -17,6 +22,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
 
 class StudentTermResource extends Resource
 {
@@ -30,7 +36,59 @@ class StudentTermResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Select::make('aysem_id')
+                    ->native(false)
+                    ->label('AYSEM')
+                    ->searchable()
+                    ->relationship('aysem', 'academic_year_sem')
+                    ->default(function () {
+                        return Aysem::latest('date_start')->first()->id;
+                    })
+                    ->required(),
+                Select::make('student_no')
+                    ->native(false)
+                    ->label('Student No')
+                    ->relationship('student', 'student_no')
+                    ->searchable()
+                    ->required(),
+                TextInput::make('year_level')->label('Year Level')
+                    ->required(),
+                Select::make('program_id')
+                    ->native(false)
+                    ->label('Program')
+                    ->searchable()
+                    ->relationship('program', 'program_title')
+                    ->required(),
+                Select::make('block_id')
+                    ->native(false)
+                    ->label('Block ID')
+                    ->searchable()
+                    ->relationship('block', 'block_id'),
+                Select::make('registration_id')
+                    ->native(false)
+                    ->label('Registration Status')
+                    ->relationship('registrationStatus', 'registration_status')
+                    ->default(function () {
+                        return RegistrationStatus::where('registration_status', 'Regular')->first()->id;
+                    })
+                    ->required(),
+                Select::make('student_type')
+                    ->native(false)
+                    ->label('Student type')
+                    ->options([
+                        'old' => 'Old',
+                        'new' => 'New',
+                    ])
+                    ->default('new')
+                    ->required(),
+                Grid::make([
+                    'default' => 1,
+                ])->schema([
+                    Toggle::make('graduating')->label('Graduating')
+                        ->default(false),
+                    Toggle::make('enrolled')->label('Enrolled')
+                        ->default(false),
+                ]),
             ]);
     }
 
@@ -63,8 +121,30 @@ class StudentTermResource extends Resource
                 IconColumn::make('enrolled')
                     ->boolean()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->sortable(),
             ])
             ->filters([
+                Filter::make('latest')
+                    ->label('Latest Records')
+                    ->query(function ($query) {
+                        $subQuery = DB::table('student_terms')
+                                ->select('student_no', DB::raw('MAX(created_at) as latest_created_at'))
+                                ->groupBy('student_no');
+                
+                        $query->whereIn('created_at', function ($query) use ($subQuery) {
+                            $query->select('latest_created_at')
+                                ->fromSub($subQuery, 'sub');
+                        });
+                    }),
+                Filter::make('graduating')
+                    ->label('Graduating')
+                    ->query(fn (Builder $query): Builder => $query->where('graduating', true)),
+                Filter::make('enrolled')
+                    ->label('Enrolled')
+                    ->query(fn (Builder $query): Builder => $query->where('enrolled', true)),
                 SelectFilter::make('aysem_id')
                     ->label('AYSEM')
                     ->searchable()

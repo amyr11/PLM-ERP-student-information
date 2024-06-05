@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Program;
+use App\Models\RegistrationStatus;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use \Illuminate\Support\Facades\Hash;
@@ -16,7 +18,18 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         for ($i = 0; $i < 50; $i++) {
-            Student::factory()->create();
+            $student = Student::factory()->create();
+            // Insert the student term
+            $student->addTerm(
+                $student->aysem_id,
+                Program::inRandomOrder()->first()->id,
+                null,
+                RegistrationStatus::where('registration_status', 'Regular')->first()->id,
+                'new',
+                false,
+                false,
+                1,
+            );
         }
     }
 }

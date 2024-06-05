@@ -16,22 +16,22 @@ class CreateStudent extends CreateRecord
     {
         // Insert the student
         $tempData = $data;
-        unset($tempData['registration_status_id']);
-        unset($tempData['program_id']);
-        unset($tempData['year_level']);
-        unset($tempData['student_type']);
+        unset($tempData['student_term']['registration_status_id']);
+        unset($tempData['student_term']['program_id']);
+        unset($tempData['student_term']['year_level']);
+        unset($tempData['student_term']['student_type']);
         $record = static::getModel()::create($tempData);
 
         // Insert the student term
         $record->addTerm(
             $data['aysem_id'],
-            $data['program_id'],
+            $data['student_term']['program_id'],
             null,
-            $data['registration_status_id'],
-            $data['student_type'],
+            $data['student_term']['registration_status_id'],
+            $data['student_term']['student_type'],
             false,
             false,
-            $data['year_level']
+            $data['student_term']['year_level']
         );
 
         return $record;

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('instructor_code');
             $table->string('pedigree')->nullable();
             $table->string('birth_date');
-            $table->string('citizenship');
             $table->string('mobile_phone');
             $table->string('email_address');
             $table->string('tin_number', length: 15)->unique()->nullable();
