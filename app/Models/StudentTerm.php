@@ -50,6 +50,7 @@ class StudentTerm extends Model
         return static::whereIn('id', $latestStudents->pluck('latest_id'))
             ->where('year_level', $yearLevel)
             ->where('aysem_id', $aysem->id)
+            ->where('enrolled', true)
             ->count();
     }
 
