@@ -33,95 +33,98 @@ class StudentRequestResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Section::make('Student information')
-                    ->schema([
-                        Grid::make([
-                            'sm' => 2,
-                            'lg' => 3,
+        $schema = [
+            Section::make('Student information')
+                ->schema([
+                    Grid::make([
+                        'sm' => 2,
+                        'lg' => 3,
+                    ])
+                        ->schema([
+                            Select::make('student_no')
+                                ->relationship('student', 'student_no')
+                                ->preload()
+                                ->searchable()
+                                ->required()
+                                ->label('Student No.'),
+                            Select::make('student_request_mode_id')
+                                ->relationship('studentRequestMode', 'mode')
+                                ->required()
+                                ->label('Mode of Payment'),
+                            Select::make('student_request_status_id')
+                                ->relationship('studentRequestStatus', 'status')
+                                ->required()
+                                ->label('Status'),
+                        ]),
+                ]),
+            Section::make('Request information')
+                ->schema([
+                    Grid::make([
+                        'sm' => 2,
+                        'lg' => 3,
+                    ])
+                        ->schema([
+                            TextInput::make('receipt_no')
+                                ->required()
+                                ->label('Receipt No.'),
+                            TextInput::make('purpose')
+                                ->required()
+                                ->label('Purpose'),
+                            TextInput::make('total')
+                                ->required()
+                                ->label('Total'),
+                            TextInput::make('registrar_name')
+                                ->label('Registrar Name'),
+                            DatePicker::make('date_requested')
+                                ->maxDate(now())
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    $set('date_of_payment', $state);
+                                    $set('expected_release', $state);
+                                    $set('date_received', $state);
+                                })
+                                ->label('Date Requested'),
+                            DatePicker::make('date_of_payment')
+                                ->minDate(fn (callable $get) => $get('date_requested'))
+                                ->required()
+                                ->label('Date of Payment'),
+                            DatePicker::make('expected_release')
+                                ->minDate(fn (callable $get) => $get('date_requested'))
+                                ->required()
+                                ->label('Expected Release'),
+                            DatePicker::make('date_received')
+                                ->minDate(fn (callable $get) => $get('date_requested'))
+                                ->label('Date Received'),
+                        ]),
+                ]),
+        ];
+
+        if (str_ends_with(request()->route()->getName(), '.create')) {
+            $schema[] = Section::make('Requested Documents')
+                ->schema([
+                    Forms\Components\Repeater::make('requested_documents')
+                        ->relationship('requestedDocuments')
+                        ->schema([
+                            Select::make('document_type_id')
+                                ->relationship('documentType', 'document_name')
+                                ->required()
+                                ->label('Document Type'),
+                            TextInput::make('no_of_copies')
+                                ->required()
+                                ->numeric()
+                                ->label('Number of Copies'),
+                            Select::make('requested_document_status_id')
+                                ->relationship('requestedDocumentStatus', 'status')
+                                ->required()
+                                ->label('Status'),
                         ])
-                            ->schema([
-                                Select::make('student_no')
-                                    ->relationship('student', 'student_no')
-                                    ->preload()
-                                    ->searchable()
-                                    ->required()
-                                    ->label('Student No.'),
-                                Select::make('student_request_mode_id')
-                                    ->relationship('studentRequestMode', 'mode')
-                                    ->required()
-                                    ->label('Mode of Payment'),
-                                Select::make('student_request_status_id')
-                                    ->relationship('studentRequestStatus', 'status')
-                                    ->required()
-                                    ->label('Status'),
-                            ]),
-                    ]),
-                Section::make('Request information')
-                    ->schema([
-                        Grid::make([
-                            'sm' => 2,
-                            'lg' => 3,
-                        ])
-                            ->schema([
-                                TextInput::make('receipt_no')
-                                    ->required()
-                                    ->label('Receipt No.'),
-                                TextInput::make('purpose')
-                                    ->required()
-                                    ->label('Purpose'),
-                                TextInput::make('total')
-                                    ->required()
-                                    ->label('Total'),
-                                TextInput::make('registrar_name')
-                                    ->label('Registrar Name'),
-                                DatePicker::make('date_requested')
-                                    ->maxDate(now())
-                                    ->required()
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        $set('date_of_payment', $state);
-                                        $set('expected_release', $state);
-                                        $set('date_received', $state);
-                                    })
-                                    ->label('Date Requested'),
-                                DatePicker::make('date_of_payment')
-                                    ->minDate(fn (callable $get) => $get('date_requested'))
-                                    ->required()
-                                    ->label('Date of Payment'),
-                                DatePicker::make('expected_release')
-                                    ->minDate(fn (callable $get) => $get('date_requested'))
-                                    ->required()
-                                    ->label('Expected Release'),
-                                DatePicker::make('date_received')
-                                    ->minDate(fn (callable $get) => $get('date_requested'))
-                                    ->label('Date Received'),
-                            ]),
-                    ]),
-                Section::make('Requested Documents')
-                    ->schema([
-                        Forms\Components\Repeater::make('requested_documents')
-                            ->relationship('requestedDocuments')
-                            ->schema([
-                                Select::make('document_type_id')
-                                    ->relationship('documentType', 'document_name')
-                                    ->required()
-                                    ->label('Document Type'),
-                                TextInput::make('no_of_copies')
-                                    ->required()
-                                    ->numeric()
-                                    ->label('Number of Copies'),
-                                Select::make('requested_document_status_id')
-                                    ->relationship('requestedDocumentStatus', 'status')
-                                    ->required()
-                                    ->label('Status'),
-                            ])
-                            ->minItems(1)
-                            ->label('Requested Documents')
-                            ->required(),
-                    ]),
-            ]);
+                        ->minItems(1)
+                        ->required(),
+                ]);
+        }
+
+        return $form->schema($schema);
     }
 
     public static function table(Table $table): Table
@@ -130,6 +133,7 @@ class StudentRequestResource extends Resource
             ->columns([
                 TextColumn::make('student.student_no')
                     ->sortable()
+                    ->searchable()
                     ->label('Student No.'),
                 TextColumn::make('purpose')
                     ->label('Purpose'),
@@ -163,7 +167,6 @@ class StudentRequestResource extends Resource
                 SelectFilter::make('student_request_mode_id')
                     ->label('Mode of Payment')
                     ->relationship('studentRequestMode', 'mode'),
-
                 SelectFilter::make('registrar_name')
                     ->label('Registrar Name')
                     ->options(
@@ -172,7 +175,6 @@ class StudentRequestResource extends Resource
                             ->pluck('registrar_name', 'registrar_name')
                             ->toArray()
                     ),
-
                 SelectFilter::make('student_request_status_id')
                     ->label('Status')
                     ->relationship('studentRequestStatus', 'status'),
