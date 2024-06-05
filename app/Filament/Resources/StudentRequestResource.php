@@ -103,7 +103,7 @@ class StudentRequestResource extends Resource
             Grid::make([
                 'default' => 1,
             ])
-                ->hiddenOn(['edit', 'view'])
+                ->hiddenOn(['view'])
                 ->schema([
                     Forms\Components\Repeater::make('requested_documents')
                         ->relationship('requestedDocuments')

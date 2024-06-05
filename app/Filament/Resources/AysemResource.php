@@ -23,7 +23,7 @@ class AysemResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $modelLabel = 'Academic Year & Semester';
 
