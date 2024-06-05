@@ -69,13 +69,15 @@ class Student extends Model
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    | Below are the relationships of the Student model with other models
-    |
-    */
+    public function pendingEmailPLMEmails(): HasMany
+    {
+        return $this->hasMany(PendingEmailStudentPortal::class);
+    }
+
+    public function pendingEmailStudentPortals(): HasMany
+    {
+        return $this->hasMany(PendingEmailStudentPortal::class);
+    }
 
     public function terms(): HasMany
     {

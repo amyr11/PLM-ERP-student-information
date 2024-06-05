@@ -6,8 +6,10 @@ use App\Filament\Resources\StudentRequestResource\Pages;
 use App\Filament\Resources\StudentRequestResource\RelationManagers;
 use App\Models\StudentRequest;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -36,15 +38,15 @@ class StudentRequestResource extends Resource
                             'lg' => 3,
                         ])
                             ->schema([
-                                // Select::make('student_id')
-                                //     ->relationship('student', 'student_no')
-                                //     ->required(),
-                                // Select::make('student_request_mode_id')
-                                //     ->relationship('studentRequest', 'mode')
-                                //     ->required(),
-                                // Select::make('student_request_status_id')
-                                //     ->relationship('studentRequestStatus', 'status')
-                                //     ->required(),
+                                Select::make('student_id')
+                                    ->relationship('student', 'student_no')
+                                    ->required(),
+                                Select::make('student_request_mode_id')
+                                    ->relationship('studentRequestMode', 'mode')
+                                    ->required(),
+                                Select::make('student_request_status_id')
+                                    ->relationship('studentRequestStatus', 'status')
+                                    ->required(),
                             ]),
                     ]),
                 Section::make('Request information')
@@ -58,14 +60,26 @@ class StudentRequestResource extends Resource
                                     ->required(),
                                 TextInput::make('purpose')
                                     ->required(),
+                                TextInput::make('total')
+                                    ->required(),
                                 TextInput::make('registrar_name'),
-                                TextInput::make('date_requested')
+                                DatePicker::make('date_requested')
+                                    ->maxDate(now())
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        $set('date_of_payment', $state);
+                                        $set('expected_release', $state);
+                                        $set('date_received', $state);
+                                    }),
+                                DatePicker::make('date_of_payment')
+                                    ->minDate(fn (callable $get) => $get('date_requested'))
                                     ->required(),
-                                TextInput::make('date_of_payment')
+                                DatePicker::make('expected_release')
+                                    ->minDate(fn (callable $get) => $get('date_requested'))
                                     ->required(),
-                                TextInput::make('expected_release')
-                                    ->required(),
-                                TextInput::make('date_received'),
+                                DatePicker::make('date_received')
+                                    ->minDate(fn (callable $get) => $get('date_requested')),
                             ]),
                     ]),
             ]);
@@ -75,10 +89,11 @@ class StudentRequestResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('student_no'),
+                TextColumn::make('student.student_no'),
                 TextColumn::make('purpose'),
                 TextColumn::make('mode'),
                 TextColumn::make('receipt_no'),
+                TextColumn::make('total'),
                 TextColumn::make('registrar_name'),
                 TextColumn::make('date_requested'),
                 TextColumn::make('expected_release'),

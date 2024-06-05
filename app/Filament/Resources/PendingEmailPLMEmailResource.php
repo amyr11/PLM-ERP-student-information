@@ -4,15 +4,25 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PendingEmailPLMEmailResource\Pages;
 use App\Filament\Resources\PendingEmailPLMEmailResource\RelationManagers;
+use App\Mail\SendPLMEmailCredentials;
 use App\Models\PendingEmailPLMEmail;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PendingEmailPLMEmailResource extends Resource
 {
@@ -33,7 +43,20 @@ class PendingEmailPLMEmailResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('temp_password')
+                    ->label('Temporary Password')
+                    ->required()
+                    ->unique(),
+                Select::make('student_no')
+                    // Only show students who are not yet in the pending_email_p_l_m_emails table
+                    ->relationship('student', 'student_no', function ($query) {
+                        $query->whereNotIn('student_no', function ($query) {
+                            $query->select('student_no')
+                                  ->from('pending_email_p_l_m_emails');
+                        });
+                    })
+                    ->label('Student')
+                    ->required(),
             ]);
     }
 
@@ -41,27 +64,96 @@ class PendingEmailPLMEmailResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('student_no'),
-                TextColumn::make('full_name')
-                    ->getStateUsing(function ($record) {
-                        return $record->student->full_name;
-                    }),
-                TextColumn::make('plm_email')
-                    ->label('PLM Email')
-                    ->getStateUsing(function ($record) {
-                        return $record->student->plm_email ?? 'No Email';
-                    }),
+                TextColumn::make('id')->sortable()->label('ID'),
+                TextColumn::make('student.student_no')->label('Student Number'),
+                TextColumn::make('student.plm_email')->label('PLM Email'),
+                TextColumn::make('temp_password')->label('Temporary Password'),
+                TextColumn::make('student.personal_email')->label('Personal Email'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                //
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function (Tables\Actions\DeleteAction $action, $record) {
+                        // Send the email before deletion
+                        if ($record && $record->student) {
+                            try {
+                                Mail::to($record->student->personal_email)->send(new SendPLMEmailCredentials($record));
+                                Log::info('Email sent to: ' . $record->student->personal_email);
+                            } catch (\Exception $e) {
+                                Log::error('Failed to send email to: ' . $record->student->personal_email . '. Error: ' . $e->getMessage());
+                                $action->halt(); // Halt the deletion if email sending fails
+                            }
+                        }
+                    })
+                    ->after(function () {
+                        Log::info('Student record deleted after email was sent.');
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                Action::make('send_emails')
+                    ->label('Email All')
+                    ->action(function () {
+                        // Set max execution time to 300 seconds
+                        ini_set('max_execution_time', 300);
+                        
+                        $students = PendingEmailPLMEmail::all();
+
+                        foreach ($students as $student) {
+                            if ($student && $student->student) {
+                                try {
+                                    // Send email
+                                    Mail::to($student->student->personal_email)->send(new SendPLMEmailCredentials($student));
+                                    Log::info('Email sent to: ' . $student->student->personal_email);
+
+                                    // Delete the student from PendingEmailPLMEmail
+                                    $student->delete();
+                                    Log::info('Deleted student: ' . $student->student->student_no . ' from PendingEmailPLMEmail');
+                                } catch (\Exception $e) {
+                                    Log::error('Failed to send email to: ' . $student->student->personal_email . '. Error: ' . $e->getMessage());
+                                }
+                            }
+                        }
+
+                        return 'Emails are being sent!';
+                    }),
+                Action::make('edit_email_template')
+                    ->label('Edit Email Template')
+                    ->action(function (array $data) {
+                        DB::table('email_templates')->updateOrInsert(
+                            ['type' => 'plm_email_credentials'],
+                            ['subject' => $data['subject'], 'body' => $data['body']]
+                        );
+                    })
+                    ->mountUsing(function ($form) {
+                        $template = DB::table('email_templates')->where('type', 'plm_email_credentials')->first();
+                        $form->fill([
+                            'subject' => $template->subject ?? 'Your PLM Email Credentials',
+                            'body' => $template->body ?? 
+'<p>Dear Student,</p>
+<p>Your PLM email credentials are as follows:</p>
+<p>Email: {{ $plm_email }}</p>
+<p>Password: {{ $temp_password }}</p>
+<p>Please log in and change your password immediately.</p>
+<p>Best regards,</p>
+<p>PLM Office of the University Registrar</p>',
+                        ]);
+                    })
+                    ->form([
+                        TextInput::make('subject')->label('Email Subject')->required(),
+                        Textarea::make('body')
+                            ->label('Email Body')
+                            ->required()
+                            ->rows(7),
+                    ]),
             ]);
     }
 
