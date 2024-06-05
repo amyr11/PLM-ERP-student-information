@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('purpose');
             $table->string('receipt_no');
             $table->string('registrar_name')->nullable();
-            $table->float('total');
+            $table->float('total')->nullable();
             $table->date('date_requested');
             $table->date('date_of_payment');
             $table->date('expected_release');

@@ -70,10 +70,10 @@ class StudentRequestResource extends Resource
                             TextInput::make('purpose')
                                 ->required()
                                 ->label('Purpose'),
-                            TextInput::make('total')
-                                ->required()
-                                ->numeric()
-                                ->label('Total'),
+                            // TextInput::make('total')
+                            //     ->required()
+                            //     ->numeric()
+                            //     ->label('Total'),
                             TextInput::make('registrar_name')
                                 ->label('Registrar Name'),
                             DatePicker::make('date_requested')
@@ -100,7 +100,10 @@ class StudentRequestResource extends Resource
                                 ->label('Date Received'),
                         ]),
                 ]),
-            Section::make('Requested Documents')
+            Grid::make([
+                'default' => 1,
+            ])
+                ->hiddenOn(['edit', 'view'])
                 ->schema([
                     Forms\Components\Repeater::make('requested_documents')
                         ->relationship('requestedDocuments')
@@ -130,6 +133,7 @@ class StudentRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('student.student_no')
                     ->sortable()
@@ -178,14 +182,6 @@ class StudentRequestResource extends Resource
                 SelectFilter::make('student_request_mode_id')
                     ->label('Mode of Payment')
                     ->relationship('studentRequestMode', 'mode'),
-                SelectFilter::make('registrar_name')
-                    ->label('Registrar Name')
-                    ->options(
-                        StudentRequest::query()
-                            ->distinct()
-                            ->pluck('registrar_name', 'registrar_name')
-                            ->toArray()
-                    ),
                 SelectFilter::make('student_request_status_id')
                     ->label('Status')
                     ->relationship('studentRequestStatus', 'status'),
@@ -198,11 +194,7 @@ class StudentRequestResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort(function (Builder $query) {
-                $query->join('student_request_statuses', 'student_requests.student_request_status_id', '=', 'student_request_statuses.id')
-                    ->orderByRaw("FIELD(student_request_statuses.status, 'Pending', 'Ready', 'Claimed')");
-            });
+            ]);
     }
 
     public static function getRelations(): array
