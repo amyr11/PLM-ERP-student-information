@@ -14,10 +14,14 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StudentRequestResource extends Resource
 {
@@ -38,15 +42,20 @@ class StudentRequestResource extends Resource
                             'lg' => 3,
                         ])
                             ->schema([
-                                Select::make('student_id')
+                                Select::make('student_no')
                                     ->relationship('student', 'student_no')
-                                    ->required(),
+                                    ->preload()
+                                    ->searchable()
+                                    ->required()
+                                    ->label('Student No.'),
                                 Select::make('student_request_mode_id')
                                     ->relationship('studentRequestMode', 'mode')
-                                    ->required(),
+                                    ->required()
+                                    ->label('Mode of Payment'),
                                 Select::make('student_request_status_id')
                                     ->relationship('studentRequestStatus', 'status')
-                                    ->required(),
+                                    ->required()
+                                    ->label('Status'),
                             ]),
                     ]),
                 Section::make('Request information')
@@ -57,12 +66,16 @@ class StudentRequestResource extends Resource
                         ])
                             ->schema([
                                 TextInput::make('receipt_no')
-                                    ->required(),
+                                    ->required()
+                                    ->label('Receipt No.'),
                                 TextInput::make('purpose')
-                                    ->required(),
+                                    ->required()
+                                    ->label('Purpose'),
                                 TextInput::make('total')
-                                    ->required(),
-                                TextInput::make('registrar_name'),
+                                    ->required()
+                                    ->label('Total'),
+                                TextInput::make('registrar_name')
+                                    ->label('Registrar Name'),
                                 DatePicker::make('date_requested')
                                     ->maxDate(now())
                                     ->required()
@@ -71,16 +84,42 @@ class StudentRequestResource extends Resource
                                         $set('date_of_payment', $state);
                                         $set('expected_release', $state);
                                         $set('date_received', $state);
-                                    }),
+                                    })
+                                    ->label('Date Requested'),
                                 DatePicker::make('date_of_payment')
                                     ->minDate(fn (callable $get) => $get('date_requested'))
-                                    ->required(),
+                                    ->required()
+                                    ->label('Date of Payment'),
                                 DatePicker::make('expected_release')
                                     ->minDate(fn (callable $get) => $get('date_requested'))
-                                    ->required(),
+                                    ->required()
+                                    ->label('Expected Release'),
                                 DatePicker::make('date_received')
-                                    ->minDate(fn (callable $get) => $get('date_requested')),
+                                    ->minDate(fn (callable $get) => $get('date_requested'))
+                                    ->label('Date Received'),
                             ]),
+                    ]),
+                Section::make('Requested Documents')
+                    ->schema([
+                        Forms\Components\Repeater::make('requested_documents')
+                            ->relationship('requestedDocuments')
+                            ->schema([
+                                Select::make('document_type_id')
+                                    ->relationship('documentType', 'document_name')
+                                    ->required()
+                                    ->label('Document Type'),
+                                TextInput::make('no_of_copies')
+                                    ->required()
+                                    ->numeric()
+                                    ->label('Number of Copies'),
+                                Select::make('requested_document_status_id')
+                                    ->relationship('requestedDocumentStatus', 'status')
+                                    ->required()
+                                    ->label('Status'),
+                            ])
+                            ->minItems(1)
+                            ->label('Requested Documents')
+                            ->required(),
                     ]),
             ]);
     }
@@ -89,19 +128,54 @@ class StudentRequestResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('student.student_no'),
-                TextColumn::make('purpose'),
-                TextColumn::make('mode'),
-                TextColumn::make('receipt_no'),
-                TextColumn::make('total'),
-                TextColumn::make('registrar_name'),
-                TextColumn::make('date_requested'),
-                TextColumn::make('expected_release'),
-                TextColumn::make('date_received'),
-                TextColumn::make('status'),
+                TextColumn::make('student.student_no')
+                    ->sortable()
+                    ->label('Student No.'),
+                TextColumn::make('purpose')
+                    ->label('Purpose'),
+                TextColumn::make('studentRequestMode.mode')
+                    ->sortable()
+                    ->label('Mode of Payment'),
+                TextColumn::make('receipt_no')
+                    ->sortable()
+                    ->label('Receipt No.'),
+                TextColumn::make('total')
+                    ->label('Total'),
+                TextColumn::make('registrar_name')
+                    ->sortable()
+                    ->label('Registrar Name')
+                    ->default('N/A'),
+                TextColumn::make('date_requested')
+                    ->sortable()
+                    ->label('Date Requested'),
+                TextColumn::make('expected_release')
+                    ->sortable()
+                    ->label('Expected Release'),
+                TextColumn::make('date_received')
+                    ->sortable()
+                    ->label('Date Received')
+                    ->default('N/A'),
+                TextColumn::make('studentRequestStatus.status')
+                    ->sortable()
+                    ->label('Status'),
             ])
             ->filters([
-                //
+                SelectFilter::make('student_request_mode_id')
+                    ->label('Mode of Payment')
+                    ->relationship('studentRequestMode', 'mode'),
+
+                SelectFilter::make('registrar_name')
+                    ->label('Registrar Name')
+                    ->options(
+                        StudentRequest::query()
+                            ->distinct()
+                            ->pluck('registrar_name', 'registrar_name')
+                            ->toArray()
+                    ),
+
+                SelectFilter::make('student_request_status_id')
+                    ->label('Status')
+                    ->relationship('studentRequestStatus', 'status'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -111,13 +185,17 @@ class StudentRequestResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort(function (Builder $query) {
+                $query->join('student_request_statuses', 'student_requests.student_request_status_id', '=', 'student_request_statuses.id')
+                    ->orderByRaw("FIELD(student_request_statuses.status, 'Pending', 'Ready', 'Claimed')");
+            });
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RequestedDocumentsRelationManager::class,
         ];
     }
 
