@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Date;
 
 class StudentResource extends Resource
 {
@@ -330,14 +331,22 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('student_no'),
-                TextColumn::make('yearlevel'),
-                TextColumn::make('last_name'),
-                TextColumn::make('first_name'),
-                TextColumn::make('middle_name'),
-                TextColumn::make('personal_email'),
-                TextColumn::make('plm_email'),
-                TextColumn::make('mobile_no'),
+                TextColumn::make('student_no')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('full_name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('personal_email')
+                    ->searchable(),
+                TextColumn::make('plm_email')
+                    ->searchable(),
+                TextColumn::make('mobile_no')
+                    ->searchable(),
+                TextColumn::make('entry_date')
+                    ->date()
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -350,11 +359,12 @@ class StudentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                // ImportAction::make()
+                //     ->importer(StudentImporter::class)
+                
             ]);
-            // ->headerActions([
-            //     ImportAction::make()
-            //         ->importer(StudentImporter::class)
-            // ]);
     }
 
     public static function getRelations(): array
