@@ -65,7 +65,10 @@ class PendingEmailStudentPortalResource extends Resource
         return $table
             ->recordUrl(null)
             ->columns([
-                TextColumn::make('student.student_no')->sortable()->label('Student No.'),
+                TextColumn::make('student.student_no')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Student No.'),
                 TextColumn::make('temp_password')->label('Temporary Password'),
                 TextColumn::make('student.personal_email')->label('Personal Email'),
             ])
