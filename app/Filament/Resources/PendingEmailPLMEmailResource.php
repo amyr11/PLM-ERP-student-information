@@ -63,6 +63,7 @@ class PendingEmailPLMEmailResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 TextColumn::make('id')->sortable()->label('ID'),
                 TextColumn::make('student.student_no')->label('Student Number'),
@@ -74,24 +75,7 @@ class PendingEmailPLMEmailResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->before(function (Tables\Actions\DeleteAction $action, $record) {
-                        // Send the email before deletion
-                        if ($record && $record->student) {
-                            try {
-                                Mail::to($record->student->personal_email)->send(new SendPLMEmailCredentials($record));
-                                Log::info('Email sent to: ' . $record->student->personal_email);
-                            } catch (\Exception $e) {
-                                Log::error('Failed to send email to: ' . $record->student->personal_email . '. Error: ' . $e->getMessage());
-                                $action->halt(); // Halt the deletion if email sending fails
-                            }
-                        }
-                    })
-                    ->after(function () {
-                        Log::info('Student record deleted after email was sent.');
-                    }),
+                //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
