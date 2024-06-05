@@ -28,9 +28,9 @@ return new class extends Migration
         Schema::table('student_terms', function (Blueprint $table) {
             $table->dropForeign(['student_no']);
             $table->dropForeign(['aysem_id']);
-            $table->dropForeign(['college_id']);
             $table->dropForeign(['program_id']);
             $table->dropForeign(['block_id']);
+            $table->dropForeign(['registration_status_id']);
         });
     }
 };

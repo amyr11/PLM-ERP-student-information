@@ -55,10 +55,17 @@ class Student extends Model
         $this->save();
     }
     
-    private function addTerm($aysemId) {
-        $this->terms()->create([
-            'aysem_id' => $aysemId,
-            'registration_status_id' => RegistrationStatus::where('status', 'Pending')->first()->id,
+    public function addTerm(int $aysem_id, int $programId, ?int $blockId, int $registrationStatusId, string $studentType, bool $graduating, bool $enrolled, int $yearLevel) {
+        StudentTerm::create([
+            'student_no' => $this->student_no,
+            'aysem_id' => $aysem_id,
+            'program_id' => $programId,
+            'block_id' => $blockId,
+            'registration_status_id' => $registrationStatusId,
+            'student_type' => $studentType,
+            'graduating' => $graduating,
+            'enrolled' => $enrolled,
+            'year_level' => $yearLevel,
         ]);
     }
 
@@ -72,7 +79,7 @@ class Student extends Model
 
     public function terms(): HasMany
     {
-        return $this->hasMany(StudentTerm::class);
+        return $this->hasMany(StudentTerm::class, 'student_no', 'student_no');
     }
 
     public function biologicalSex(): BelongsTo
@@ -104,7 +111,7 @@ class Student extends Model
     {
         return $this->belongsTo(Aysem::class);
     }
-
+    
     protected static function booted()
     {
         static::created(function ($student) {

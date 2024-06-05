@@ -7,7 +7,10 @@ use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Aysem;
 use App\Models\Citizenship;
+use App\Models\Program;
+use App\Models\RegistrationStatus;
 use App\Models\Student;
+use App\Models\StudentTerm;
 use App\Services\PLMEmail;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Forms;
@@ -26,6 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 
 class StudentResource extends Resource
 {
@@ -226,6 +230,7 @@ class StudentResource extends Resource
                                         }
                                     ),
                                 TextInput::make('plm_email')
+                                    ->label('PLM email')
                                     ->email()
                                     ->required(),
                                 Select::make('paying')
@@ -235,6 +240,40 @@ class StudentResource extends Resource
                                         1 => 'Yes',
                                     ])
                                     ->default(0)
+                                    ->required(),
+                                Select::make('registration_status_id')
+                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
+                                    ->label('Registration Status')
+                                    ->options(RegistrationStatus::pluck('registration_status', 'id'))
+                                    ->default(function () {
+                                        return RegistrationStatus::where('registration_status', 'Regular')->first()->id;
+                                    })
+                                    ->hiddenOn(['edit', 'view'])
+                                    ->required(),
+                                Select::make('student_type')
+                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
+                                    ->label('Student type')
+                                    ->options([
+                                        'old' => 'Old',
+                                        'new' => 'New',
+                                    ])
+                                    ->default('new')
+                                    ->hiddenOn(['edit', 'view'])
+                                    ->required(),
+                                Select::make('program_id')
+                                    ->label('Program Title')
+                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
+                                    ->options(Program::pluck('program_title', 'id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->hiddenOn(['edit', 'view'])
+                                    ->hiddenOn(['edit', 'view'])
+                                    ->required(),
+                                TextInput::make('year_level')
+                                    ->numeric()
+                                    ->default(1)
+                                    ->hiddenOn(['edit', 'view'])
+                                    ->unique(table:StudentTerm::class, ignoreRecord:true)
                                     ->required(),
                             ]),
                     ]),

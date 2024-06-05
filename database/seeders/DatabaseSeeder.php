@@ -21,9 +21,11 @@ class DatabaseSeeder extends Seeder
             CivilStatusSeeder::class,
             CitizenshipSeeder::class,
             AysemSeeder::class,
+            RegistrationStatusSeeder::class,
+            CollegeSeeder::class,
+            ProgramSeeder::class,
             StudentSeeder::class,
 
-            RegistrationStatusSeeder::class,
             DaySeeder::class,
             ClassModeSeeder::class,
             
@@ -34,7 +36,6 @@ class DatabaseSeeder extends Seeder
             StudentRequestSeeder::class,
             RequestedDocumentSeeder::class,
 
-            // CollegeSeeder::class,
             // FeeStatusSeeder::class,
             // OffenseTypeSeeder::class,
             // BuildingSeeder::class,
