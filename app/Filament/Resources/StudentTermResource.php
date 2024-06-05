@@ -129,6 +129,7 @@ class StudentTermResource extends Resource
             ->filters([
                 Filter::make('latest')
                     ->label('Latest Records')
+                    ->default(true)
                     ->query(function ($query) {
                         $subQuery = DB::table('student_terms')
                                 ->select('student_no', DB::raw('MAX(created_at) as latest_created_at'))
@@ -148,7 +149,10 @@ class StudentTermResource extends Resource
                 SelectFilter::make('aysem_id')
                     ->label('AYSEM')
                     ->searchable()
-                    ->relationship('aysem', 'academic_year_sem'),
+                    ->relationship('aysem', 'academic_year_sem')
+                    ->default(function () {
+                        return Aysem::latest('date_start')->first()->id;
+                    }),
                 SelectFilter::make('program_id')
                     ->label('Program')
                     ->searchable()

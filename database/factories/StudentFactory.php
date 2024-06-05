@@ -31,7 +31,7 @@ class StudentFactory extends Factory
         $biologicalSex = BiologicalSex::all();
         $civilStatus = CivilStatus::first();
         $citizenship = Citizenship::first();
-        $aysem = Aysem::where('academic_year', 2023)->where('semester', 1)->first();
+        $aysem = Aysem::latest('date_start')->first();
         $lastName = $this->faker->lastName;
         $firstName = $this->faker->firstName;
         $middleName = $this->faker->lastName;
