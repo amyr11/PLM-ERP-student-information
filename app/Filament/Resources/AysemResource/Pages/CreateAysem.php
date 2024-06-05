@@ -22,7 +22,7 @@ class CreateAysem extends CreateRecord
             // Get the latest record of this student on the StudentTerm
             $latestStudentTerm = StudentTerm::where('student_no', $student->student_no)->latest()->first();
 
-            if ($latestStudentTerm->graduated) {
+            if ($latestStudentTerm->graduated || !$latestStudentTerm->enrolled) {
                 continue;
             }
 
