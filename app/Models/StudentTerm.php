@@ -14,4 +14,24 @@ class StudentTerm extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function aysem(): BelongsTo
+    {
+        return $this->belongsTo(Aysem::class);
+    }
+
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(Program::class);
+    }
+
+    public function block(): BelongsTo
+    {
+        return $this->belongsTo(Block::class);
+    }
+
+    public function registrationStatus(): BelongsTo
+    {
+        return $this->belongsTo(RegistrationStatus::class);
+    }
 }
