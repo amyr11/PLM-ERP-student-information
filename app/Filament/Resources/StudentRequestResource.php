@@ -72,6 +72,7 @@ class StudentRequestResource extends Resource
                                 ->label('Purpose'),
                             TextInput::make('total')
                                 ->required()
+                                ->numeric()
                                 ->label('Total'),
                             TextInput::make('registrar_name')
                                 ->label('Registrar Name'),
