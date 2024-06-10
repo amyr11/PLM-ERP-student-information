@@ -27,24 +27,10 @@ class CurriculumResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('name')
+                    ->required(),
                 Select::make('program_id')
                     ->relationship('program', 'program_title')
-                    ->required(),
-                Select::make('course_id')
-                    ->relationship('course', 'subject_title')
-                    ->required(),
-                TextInput::make('semester')
-                    ->required()
-                    ->numeric()
-                    ->minValue(1)
-                    ->maxValue(3),
-                TextInput::make('year_level')
-                    ->required()
-                    ->numeric()
-                    ->minValue(1)
-                    ->maxValue(6),
-                Select::make('aysem_id')
-                    ->relationship('aysem', 'academic_year_code')
                     ->required(),
             ]);
     }
@@ -53,21 +39,14 @@ class CurriculumResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('program.program_code')
-                    ->label('Program Code'),
-                TextColumn::make('course.subject_code')
-                    ->label('Course Code'),
-                TextColumn::make('course.subject_title')
-                    ->label('Course Title'),
-                TextColumn::make('year_level')
-                    ->label('Year Level')
-                    ->sortable(),
-                TextColumn::make('semester')
-                    ->label('Semester')
-                    ->sortable(),
-                TextColumn::make('aysem.academic_year_code')
-                    ->label('Academic Year')
-                    ->sortable(),
+                TextColumn::make('name')
+                    ->label('Curriculum Name')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('program.program_title')
+                    ->label('Program')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //

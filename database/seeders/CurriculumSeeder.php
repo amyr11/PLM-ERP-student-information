@@ -13,11 +13,9 @@ class CurriculumSeeder extends Seeder
     public function run(): void
     {
         $curricula = [
-            ['program_id' => 1, 'course_id' => 1, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
-            ['program_id' => 1, 'course_id' => 2, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
-            ['program_id' => 1, 'course_id' => 3, 'semester' => 2, 'year_level' => 1, 'aysem_id' => 1],
-            ['program_id' => 1, 'course_id' => 4, 'semester' => 2, 'year_level' => 1, 'aysem_id' => 1],
-            // Add more curriculum entries here based on your curriculum
+            ['name' => 'Series 2020', 'program_id' => 1],
+            ['name' => 'Series 2021', 'program_id' => 1],
+            // Add more curricula here
         ];
 
         foreach ($curricula as $curriculum) {

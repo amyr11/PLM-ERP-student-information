@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('curricula', function (Blueprint $table) {
             $table->id();
-            $table->integer('semester');
-            $table->integer('year_level');
+            $table->string('name');
             $table->timestamps();
         });
     }

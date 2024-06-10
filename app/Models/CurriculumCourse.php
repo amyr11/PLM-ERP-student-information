@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Curriculum extends Model
+class CurriculumCourse extends Model
 {
     use HasFactory;
 
@@ -15,8 +15,13 @@ class Curriculum extends Model
         'updated_at',
     ];
 
-    public function program(): BelongsTo
+    public function curriculum(): BelongsTo
     {
-        return $this->belongsTo(Program::class);
+        return $this->belongsTo(Curriculum::class);
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
     }
 }
