@@ -39,6 +39,14 @@ class DatabaseSeeder extends Seeder
             // FeeStatusSeeder::class,
             // OffenseTypeSeeder::class,
             // BuildingSeeder::class,
+
+            BlockSeeder::class,
+            CourseSeeder::class,
+            ClassSeeder::class,
+            CurriculumSeeder::class,
+            CurriculumCourseSeeder::class,
+            ProgramCurriculumSeeder::class,
+            
         ]);
     }
 }
