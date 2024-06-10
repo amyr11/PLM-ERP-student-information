@@ -14,7 +14,7 @@ class CurriculumProgramSeeder extends Seeder
     {
         $curriculumPrograms = [
             ['curriculum_id' => 1, 'program_id' => 1],
-            ['curriculum_id' => 2, 'program_id' => 1],
+            ['curriculum_id' => 2, 'program_id' => 2],
             // Add more curriculum programs here
         ];
 
