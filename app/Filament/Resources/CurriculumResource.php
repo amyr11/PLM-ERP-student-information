@@ -34,9 +34,15 @@ class CurriculumResource extends Resource
                     ->relationship('course', 'subject_title')
                     ->required(),
                 TextInput::make('semester')
-                    ->required(),
+                    ->required()
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(3),
                 TextInput::make('year_level')
-                    ->required(),
+                    ->required()
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(6),
                 Select::make('aysem_id')
                     ->relationship('aysem', 'academic_year_code')
                     ->required(),
@@ -47,8 +53,8 @@ class CurriculumResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('program.program_title')
-                    ->label('Program'),
+                TextColumn::make('program.program_code')
+                    ->label('Program Code'),
                 TextColumn::make('course.subject_code')
                     ->label('Course Code'),
                 TextColumn::make('course.subject_title')
