@@ -16,20 +16,10 @@ class Course extends Model
         'updated_at',
     ];
 
-    public function curriculums(): BelongsToMany
+    public function curriculumCourses(): BelongsToMany
     {
-        return $this->belongsToMany(Curriculum::class)
+        return $this->belongsToMany(CurriculumCourse::class, 'curriculum_courses', 'course_id', 'curriculum_id')
                     ->withPivot('semester', 'year_level')
                     ->withTimestamps();
-    }
-
-    public function program(): BelongsTo
-    {
-        return $this->belongsTo(Program::class);
-    }
-
-    public function aysem(): BelongsTo
-    {
-        return $this->belongsTo(Aysem::class);
     }
 }

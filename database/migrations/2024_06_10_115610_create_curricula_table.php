@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('curriculum_course', function (Blueprint $table) {
+        Schema::create('curricula', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('curriculum_id');
+            $table->unsignedBigInteger('program_id');
             $table->unsignedBigInteger('course_id');
             $table->integer('semester');
             $table->integer('year_level');
+            $table->unsignedBigInteger('aysem_id');
             $table->timestamps();
 
-            $table->foreign('curriculum_id')->references('id')->on('curricula')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('aysem_id')->references('id')->on('aysems')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('curriculum_course');
+        Schema::dropIfExists('curricula');
     }
 };

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Curriculum;
 
 class CurriculumSeeder extends Seeder
 {
@@ -13,12 +13,15 @@ class CurriculumSeeder extends Seeder
     public function run(): void
     {
         $curricula = [
-            ['curriculum_code' => 'CURR001', 'curriculum_name' => 'Curriculum 1', 'description' => 'Description for Curriculum 1'],
-            // Add more curricula here
+            ['program_id' => 1, 'course_id' => 1, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            ['program_id' => 1, 'course_id' => 2, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            ['program_id' => 1, 'course_id' => 3, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            ['program_id' => 1, 'course_id' => 4, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            // Add more curriculum entries here based on your curriculum
         ];
 
         foreach ($curricula as $curriculum) {
-            \App\Models\Curriculum::create($curriculum);
+            Curriculum::create($curriculum);
         }
     }
 }

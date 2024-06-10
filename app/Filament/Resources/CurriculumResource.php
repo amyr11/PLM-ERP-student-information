@@ -27,18 +27,15 @@ class CurriculumResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('subject_code')
-                    ->required(),
-                TextInput::make('subject_title')
-                    ->required(),
-                TextInput::make('course_number')
-                    ->required(),
-                TextInput::make('units')
-                    ->required(),
-                TextInput::make('pre_co_requisite')
-                    ->nullable(),
                 Select::make('program_id')
                     ->relationship('program', 'program_title')
+                    ->required(),
+                Select::make('course_id')
+                    ->relationship('course', 'subject_title')
+                    ->required(),
+                TextInput::make('semester')
+                    ->required(),
+                TextInput::make('year_level')
                     ->required(),
                 Select::make('aysem_id')
                     ->relationship('aysem', 'academic_year_code')
@@ -50,21 +47,21 @@ class CurriculumResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('subject_code')
-                    ->label('Course Code')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('subject_title')
-                    ->label('Course Title')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('units')
-                    ->label('Units')
+                TextColumn::make('program.program_title')
+                    ->label('Program'),
+                TextColumn::make('course.subject_code')
+                    ->label('Course Code'),
+                TextColumn::make('course.subject_title')
+                    ->label('Course Title'),
+                TextColumn::make('year_level')
+                    ->label('Year Level')
                     ->sortable(),
-                TextColumn::make('pre_co_requisite')
-                    ->label('Pre(Co)-requisites')
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('semester')
+                    ->label('Semester')
+                    ->sortable(),
+                TextColumn::make('aysem.academic_year_code')
+                    ->label('Academic Year')
+                    ->sortable(),
             ])
             ->filters([
                 //

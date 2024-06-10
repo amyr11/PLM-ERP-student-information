@@ -13,10 +13,12 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         $courses = [
-            [
+            [   
+                'id' => 1,
                 'subject_code' => 'ICC 0101',
                 'subject_title' => 'Introduction to Computing (lec)',
-                'course_number' => '0101', 'units' => 3,
+                'course_number' => '0101',
+                'units' => 3,
                 'class_code' => 1001,
                 'pre_co_requisite' => null,
                 'program_id' => 1,

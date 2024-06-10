@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Curriculum extends Model
 {
@@ -15,15 +15,18 @@ class Curriculum extends Model
         'updated_at',
     ];
 
-    public function courses(): BelongsToMany
+    public function program(): BelongsTo
     {
-        return $this->belongsToMany(Course::class)
-                    ->withPivot('semester', 'year_level')
-                    ->withTimestamps();
+        return $this->belongsTo(Program::class);
     }
 
-    public function programs(): BelongsToMany
+    public function course(): BelongsTo
     {
-        return $this->belongsToMany(Program::class)->withTimestamps();
+        return $this->belongsTo(Course::class);
+    }
+
+    public function aysem(): BelongsTo
+    {
+        return $this->belongsTo(Aysem::class);
     }
 }

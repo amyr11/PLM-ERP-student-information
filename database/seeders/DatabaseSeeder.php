@@ -43,10 +43,7 @@ class DatabaseSeeder extends Seeder
             BlockSeeder::class,
             CourseSeeder::class,
             ClassSeeder::class,
-            CurriculumSeeder::class,
-            CurriculumCourseSeeder::class,
-            ProgramCurriculumSeeder::class,
-            
+            CurriculumSeeder::class,            
         ]);
     }
 }
