@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('course_number');
             $table->integer('units');
             $table->integer('class_code');
-            $table->string('pre_requisite')->nullable();
+            $table->string('pre_co_requisite')->nullable();
             $table->timestamps();
         });
     }
