@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('curriculums', function (Blueprint $table) {
+        Schema::create('curricula', function (Blueprint $table) {
             $table->id();
             $table->string('curriculum_code')->unique();
             $table->string('curriculum_name');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('curriculums');
+        Schema::dropIfExists('curricula');
     }
 };

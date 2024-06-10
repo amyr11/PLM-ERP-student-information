@@ -17,9 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('curriculum_id');
             $table->timestamps();
 
-            // Adding foreign key constraints
             $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('curriculum_id')->references('id')->on('curriculums')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('curriculum_id')->references('id')->on('curricula')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

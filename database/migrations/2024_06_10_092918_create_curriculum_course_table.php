@@ -19,8 +19,7 @@ return new class extends Migration
             $table->integer('year_level');
             $table->timestamps();
 
-            // Adding foreign key constraints
-            $table->foreign('curriculum_id')->references('id')->on('curriculums')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('curriculum_id')->references('id')->on('curricula')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade')->onUpdate('cascade');
         });
     }
