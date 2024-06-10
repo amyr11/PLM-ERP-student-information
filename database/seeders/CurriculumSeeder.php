@@ -14,9 +14,9 @@ class CurriculumSeeder extends Seeder
     {
         $curricula = [
             ['program_id' => 1, 'course_id' => 1, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
-            ['program_id' => 1, 'course_id' => 2, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
-            ['program_id' => 1, 'course_id' => 3, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
-            ['program_id' => 1, 'course_id' => 4, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            ['program_id' => 1, 'course_id' => 1, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            ['program_id' => 1, 'course_id' => 1, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
+            ['program_id' => 1, 'course_id' => 1, 'semester' => 1, 'year_level' => 1, 'aysem_id' => 1],
             // Add more curriculum entries here based on your curriculum
         ];
 

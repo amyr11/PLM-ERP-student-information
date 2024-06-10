@@ -13,16 +13,9 @@ return new class extends Migration
     {
         Schema::create('curricula', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('program_id');
-            $table->unsignedBigInteger('course_id');
             $table->integer('semester');
             $table->integer('year_level');
-            $table->unsignedBigInteger('aysem_id');
             $table->timestamps();
-
-            $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('aysem_id')->references('id')->on('aysems')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
