@@ -6,6 +6,7 @@ use App\Filament\Resources\CourseResource\Pages;
 use App\Filament\Resources\CourseResource\RelationManagers;
 use App\Models\Course;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -27,18 +28,36 @@ class CourseResource extends Resource
     {
         return $form
             ->schema([
+                Select::make('aysem_id')
+                    ->label('Aysem')
+                    ->relationship('aysem', 'academic_year_code')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+                Select::make('program_id')
+                    ->label('Program')
+                    ->relationship('program', 'program_title')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('subject_code')
+                    ->label('Course code')
                     ->required(),
                 TextInput::make('subject_title')
+                    ->label('Course title')
                     ->required(),
                 TextInput::make('course_number')
+                    ->label('Course number')
                     ->required(),
                 TextInput::make('units')
+                    ->label('Units')
                     ->required()
                     ->numeric(),
                 TextInput::make('class_code')
+                    ->label('Class code')
                     ->required(),
                 TextInput::make('pre_co_requisite')
+                    ->label('Pre(Co)-requisites')
                     ->nullable(),
             ]);
     }
@@ -48,17 +67,20 @@ class CourseResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('subject_code')
-                    ->label('Subject Code')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('subject_title')
-                    ->label('Subject Title')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('course_number')
                     ->label('Course Code')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('subject_title')
+                    ->label('Course Title')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('combined')
+                    ->label('Course')
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(function (Course $record) {
+                        return "{$record->subject_code} - {$record->subject_title}";
+                    }),
                 TextColumn::make('units')
                     ->label('Units')
                     ->sortable()
