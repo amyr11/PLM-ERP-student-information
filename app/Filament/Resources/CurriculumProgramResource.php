@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -56,7 +57,16 @@ class CurriculumProgramResource extends Resource
             ])
             ->defaultSort('program.program_code', 'asc')
             ->filters([
-                //
+                SelectFilter::make('program_id')
+                    ->label('Program')
+                    ->relationship('program', 'program_title')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('curriculum_id')
+                    ->label('Current Curriculum')
+                    ->relationship('curriculum', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

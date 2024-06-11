@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -99,7 +100,24 @@ class CourseResource extends Resource
             ])
             ->defaultSort('subject_code', 'asc')
             ->filters([
-                //
+                Filter::make('subject_code')
+                    ->label('Course Code')
+                    ->query(fn (Builder $query, array $data) => $query->where('subject_code', 'like', '%' . $data['value'] . '%'))
+                    ->form([
+                        TextInput::make('value')->label('Course Code')->placeholder('Search by Course Code'),
+                    ]),
+                Filter::make('subject_title')
+                    ->label('Course Title')
+                    ->query(fn (Builder $query, array $data) => $query->where('subject_title', 'like', '%' . $data['value'] . '%'))
+                    ->form([
+                        TextInput::make('value')->label('Course Title')->placeholder('Search by Course Title'),
+                    ]),
+                Filter::make('class_code')
+                    ->label('Class Code')
+                    ->query(fn (Builder $query, array $data) => $query->where('class_code', 'like', '%' . $data['value'] . '%'))
+                    ->form([
+                        TextInput::make('value')->label('Class Code')->placeholder('Search by Class Code'),
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

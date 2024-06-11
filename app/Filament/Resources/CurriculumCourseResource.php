@@ -12,6 +12,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -74,7 +76,34 @@ class CurriculumCourseResource extends Resource
             ])
             ->defaultSort('curriculum.name', 'asc')
             ->filters([
-                //
+                SelectFilter::make('curriculum_id')
+                    ->label('Curriculum')
+                    ->relationship('curriculum', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('course_id')
+                    ->label('Course')
+                    ->relationship('course', 'subject_title')
+                    ->searchable()
+                    ->preload(),
+                Filter::make('year_level')
+                    ->form([
+                        TextInput::make('year_level')->label('Year Level')->placeholder('Search by Year Level')->numeric(),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['year_level'])) {
+                            $query->where('year_level', $data['year_level']);
+                        }
+                    }),
+                Filter::make('semester')
+                    ->form([
+                        TextInput::make('semester')->label('Semester')->placeholder('Search by Semester')->numeric(),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['semester'])) {
+                            $query->where('semester', $data['semester']);
+                        }
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
