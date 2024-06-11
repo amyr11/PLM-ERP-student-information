@@ -97,6 +97,7 @@ class CourseResource extends Resource
                     ->sortable()
                     ->searchable(),
             ])
+            ->defaultSort('subject_code', 'asc')
             ->filters([
                 //
             ])

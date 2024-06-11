@@ -72,6 +72,7 @@ class CurriculumCourseResource extends Resource
                     ->sortable()
                     ->searchable(),
             ])
+            ->defaultSort('curriculum.name', 'asc')
             ->filters([
                 //
             ])

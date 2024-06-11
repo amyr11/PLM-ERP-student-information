@@ -54,6 +54,7 @@ class CurriculumProgramResource extends Resource
                     ->sortable()
                     ->searchable(),
             ])
+            ->defaultSort('program.program_code', 'asc')
             ->filters([
                 //
             ])
