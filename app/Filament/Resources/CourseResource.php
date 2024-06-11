@@ -59,7 +59,11 @@ class CourseResource extends Resource
                     ]),
                 TextInput::make('class_code')
                     ->label('Class code')
-                    ->required(),
+                    ->required()
+                    ->numeric()
+                    ->extraInputAttributes([
+                        'min' => 1,
+                    ]),
                 TextInput::make('pre_co_requisite')
                     ->label('Pre(Co)-requisites')
                     ->nullable(),
