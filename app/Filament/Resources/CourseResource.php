@@ -43,10 +43,12 @@ class CourseResource extends Resource
                     ->preload(),
                 TextInput::make('subject_code')
                     ->label('Course code')
-                    ->required(),
+                    ->required()
+                    ->unique(),
                 TextInput::make('subject_title')
                     ->label('Course title')
-                    ->required(),
+                    ->required()
+                    ->unique(),
                 TextInput::make('course_number')
                     ->label('Course number')
                     ->required(),
