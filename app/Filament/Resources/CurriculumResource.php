@@ -4,8 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CurriculumResource\Pages;
 use App\Filament\Resources\CurriculumResource\RelationManagers;
+use App\Filament\Resources\CurriculumResource\RelationManagers\CurriculumCoursesRelationManager;
 use App\Models\Curriculum;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -29,11 +32,46 @@ class CurriculumResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->required(),
-                Select::make('program_id')
-                    ->relationship('program', 'program_title')
-                    ->required(),
+                Section::make('Curriculum')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required(),
+                        Select::make('program_id')
+                            ->relationship('program', 'program_title')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                    ]),
+                Repeater::make('courses')
+                    ->relationship('courses')
+                    ->schema([
+                        Select::make('course_id')
+                            ->label('Course')
+                            ->relationship('course', 'subject_title')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        TextInput::make('semester')
+                            ->label('Semester')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(3),
+                        TextInput::make('year_level')
+                            ->label('Year Level')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(6),
+                    ])
+                    ->columns(3)
+                    ->createItemButtonLabel('Add Course')
+                    ->label('Courses')
+                    ->collapsible()
+                    ->defaultItems(1)
+                    ->required()
+                    ->columnSpan('full')
+                    ->hiddenOn(['view', 'edit'])
             ]);
     }
 
@@ -68,7 +106,7 @@ class CurriculumResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CurriculumCoursesRelationManager::class,
         ];
     }
 
