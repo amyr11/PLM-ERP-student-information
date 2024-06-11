@@ -52,7 +52,10 @@ class CourseResource extends Resource
                 TextInput::make('units')
                     ->label('Units')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->extraInputAttributes([
+                        'min' => 1,
+                    ]),
                 TextInput::make('class_code')
                     ->label('Class code')
                     ->required(),

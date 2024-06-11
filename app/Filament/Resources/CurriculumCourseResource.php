@@ -37,13 +37,17 @@ class CurriculumCourseResource extends Resource
                 TextInput::make('semester')
                     ->required()
                     ->numeric()
-                    ->minValue(1)
-                    ->maxValue(3),
+                    ->extraInputAttributes([
+                        'min' => 1,
+                        'min' => 3,
+                    ]),
                 TextInput::make('year_level')
                     ->required()
                     ->numeric()
-                    ->minValue(1)
-                    ->maxValue(6),
+                    ->extraInputAttributes([
+                        'min' => 1,
+                        'min' => 6,
+                    ]),
             ]);
     }
 

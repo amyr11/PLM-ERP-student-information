@@ -55,14 +55,18 @@ class CurriculumResource extends Resource
                             ->label('Semester')
                             ->required()
                             ->numeric()
-                            ->minValue(1)
-                            ->maxValue(3),
+                            ->extraInputAttributes([
+                                'min' => 1,
+                                'min' => 3,
+                            ]),
                         TextInput::make('year_level')
                             ->label('Year Level')
                             ->required()
                             ->numeric()
-                            ->minValue(1)
-                            ->maxValue(6),
+                            ->extraInputAttributes([
+                                'min' => 1,
+                                'min' => 6,
+                            ]),
                     ])
                     ->columns(3)
                     ->createItemButtonLabel('Add Course')
